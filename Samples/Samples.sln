@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample02", "Sample02\Sample
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ILGPU", "..\ILGPU\Src\ILGPU\ILGPU.csproj", "{D22AB712-A547-444A-920C-DF1B9318CA0D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample03", "Sample03\Sample03.csproj", "{EF53BF72-34F6-4756-A217-7CBFBD52F3D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample04", "Sample04\Sample04.csproj", "{5B8D29D0-6DBE-4851-9C94-9E3CE2D6F0D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{D22AB712-A547-444A-920C-DF1B9318CA0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D22AB712-A547-444A-920C-DF1B9318CA0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D22AB712-A547-444A-920C-DF1B9318CA0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF53BF72-34F6-4756-A217-7CBFBD52F3D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF53BF72-34F6-4756-A217-7CBFBD52F3D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF53BF72-34F6-4756-A217-7CBFBD52F3D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF53BF72-34F6-4756-A217-7CBFBD52F3D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B8D29D0-6DBE-4851-9C94-9E3CE2D6F0D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B8D29D0-6DBE-4851-9C94-9E3CE2D6F0D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B8D29D0-6DBE-4851-9C94-9E3CE2D6F0D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B8D29D0-6DBE-4851-9C94-9E3CE2D6F0D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
