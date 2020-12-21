@@ -118,6 +118,13 @@ namespace ILGPU.OptiX
         uint width,
         uint height,
         uint depth);
+
+    internal delegate OptixResult AccelComputeMemoryUsage(
+        IntPtr context,
+        IntPtr accelOptions,
+        IntPtr buildInputs,
+        uint numBuildInputs,
+        out OptixAccelBufferSizes bufferSizes);
 }
 
 #pragma warning restore CS0649 // Field is never assigned to

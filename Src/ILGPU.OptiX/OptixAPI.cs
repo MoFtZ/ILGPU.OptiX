@@ -273,12 +273,12 @@ namespace ILGPU.OptiX
         /// <summary>
         /// Destroys the OptiX program group.
         /// </summary>
-        /// <param name="pipelnie">The OptiX pipeline.</param>
+        /// <param name="pipeline">The OptiX pipeline.</param>
         /// <returns>The OptiX result.</returns>
-        public OptixResult PipelineDestroy(IntPtr pipelnie)
+        public OptixResult PipelineDestroy(IntPtr pipeline)
         {
             var func = Marshal.GetDelegateForFunctionPointer<PipelineDestroy>(functionTable.OptixPipelineDestroy);
-            return func(pipelnie);
+            return func(pipeline);
         }
 
         /// <summary>
@@ -365,6 +365,32 @@ namespace ILGPU.OptiX
                 width,
                 height,
                 depth);
+        }
+
+        /// <summary>
+        /// Calculates accelleration structure size
+        /// </summary>
+        /// <param name="context">The OptiX device context.</param>
+        /// <param name="accelOptions">The acceleration structure build options.</param>
+        /// <param name="buildInputs">The build inputs.</param>
+        /// <param name="numBuildInputs">The build inputs count.</param>
+        /// <param name="bufferSizes">The acceleration structure size output.</param>
+        /// <returns>The OptiX result.</returns>
+        [CLSCompliant(false)]
+        public OptixResult AccelComputeMemoryUsage(
+        IntPtr context,
+        IntPtr accelOptions,
+        IntPtr buildInputs,
+        uint numBuildInputs,
+        out OptixAccelBufferSizes bufferSizes)
+        {
+            var func = Marshal.GetDelegateForFunctionPointer<AccelComputeMemoryUsage>(functionTable.OptixLaunch);
+            return func(
+                context,
+                accelOptions,
+                buildInputs,
+                numBuildInputs,
+                out bufferSizes);
         }
 
         #endregion

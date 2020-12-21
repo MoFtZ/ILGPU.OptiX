@@ -12,6 +12,7 @@
 using ILGPU.OptiX.Interop;
 using ILGPU.OptiX.Util;
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 // disable: max_line_length
@@ -325,6 +326,41 @@ namespace ILGPU.OptiX
                 out var logString);
             OptixException.ThrowIfFailed(result, logString);
             return new OptixPipeline(pipeline);
+        }
+
+        /// <summary>
+        /// Calculates accelleration structure size
+        /// </summary>
+        /// <param name="deviceContext">The OptiX device context.</param>
+        /// <param name="accelOptions">The acceleration structure build options.</param>
+        /// <param name="buildInputs">The build inputs.</param>
+        /// <returns>The acceleration structure size output.</returns>
+        [CLSCompliant(false)]
+        public static OptixAccelBufferSizes AccelComputeMemoryUsage(
+            this OptixDeviceContext deviceContext,
+            OptixAccelBuildOptions accelOptions,
+            params OptixBuildInput[] buildInputs)
+        {
+            using var accelBuildOptions = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixAccelBuildOptions>());
+            Marshal.StructureToPtr(accelOptions, accelBuildOptions, false);
+            Trace.WriteLine(Marshal.SizeOf<OptixBuildInput>());
+            using var accelBuildInputs = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixBuildInput>() * buildInputs.Length);
+            IntPtr nextPtr = accelBuildInputs;
+            foreach (var buildInput in buildInputs)
+            {
+                Marshal.StructureToPtr(buildInput, nextPtr, false);
+                nextPtr += Marshal.SizeOf<OptixBuildInput>();
+            }
+
+            var result = OptixAPI.Current.AccelComputeMemoryUsage(
+                deviceContext.DeviceContextPtr,
+                accelBuildOptions,
+                accelBuildInputs,
+                (uint)buildInputs.Length,
+                out var sizes);
+
+            OptixException.ThrowIfFailed(result);
+            return sizes;
         }
     }
 }
