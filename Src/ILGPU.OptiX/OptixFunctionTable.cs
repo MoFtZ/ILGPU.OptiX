@@ -124,7 +124,7 @@ namespace ILGPU.OptiX
         IntPtr accelOptions,
         IntPtr buildInputs,
         uint numBuildInputs,
-        out OptixAccelBufferSizes bufferSizes);
+        IntPtr bufferSizes);
 }
 
 #pragma warning restore CS0649 // Field is never assigned to

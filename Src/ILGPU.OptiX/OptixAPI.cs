@@ -382,15 +382,16 @@ namespace ILGPU.OptiX
         IntPtr accelOptions,
         IntPtr buildInputs,
         uint numBuildInputs,
-        out OptixAccelBufferSizes bufferSizes)
+        IntPtr bufferSizes)
         {
-            var func = Marshal.GetDelegateForFunctionPointer<AccelComputeMemoryUsage>(functionTable.OptixLaunch);
+            var func = Marshal.GetDelegateForFunctionPointer<AccelComputeMemoryUsage>(functionTable.OptixAccelComputeMemoryUsage);
+
             return func(
                 context,
                 accelOptions,
                 buildInputs,
                 numBuildInputs,
-                out bufferSizes);
+                bufferSizes);
         }
 
         #endregion

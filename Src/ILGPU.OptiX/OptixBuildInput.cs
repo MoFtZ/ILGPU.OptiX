@@ -68,15 +68,15 @@ namespace ILGPU.OptiX
     {
         [FieldOffset(0)]
         public OptixBuildInputType type;
-        [FieldOffset(4)]
+        [FieldOffset(8)]
         public OptixBuildInputTriangleArray triangleArray;
-        [FieldOffset(4)]
+        [FieldOffset(8)]
         public OptixBuildInputCurveArray curveArray;
-        [FieldOffset(4)]
+        [FieldOffset(8)]
         public OptixBuildInputCustomPrimitiveArray customPrimitiveArray;
-        [FieldOffset(4)]
+        [FieldOffset(8)]
         public OptixBuildInputInstanceArray instanceArray;
-        [FieldOffset(4)]
+        [FieldOffset(8)]
         public fixed byte pad[1024];
     }
 

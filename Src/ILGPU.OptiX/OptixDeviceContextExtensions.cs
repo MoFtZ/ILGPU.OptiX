@@ -336,7 +336,7 @@ namespace ILGPU.OptiX
         /// <param name="buildInputs">The build inputs.</param>
         /// <returns>The acceleration structure size output.</returns>
         [CLSCompliant(false)]
-        public static OptixAccelBufferSizes AccelComputeMemoryUsage(
+        public unsafe static OptixAccelBufferSizes AccelComputeMemoryUsage(
             this OptixDeviceContext deviceContext,
             OptixAccelBuildOptions accelOptions,
             params OptixBuildInput[] buildInputs)
@@ -352,15 +352,22 @@ namespace ILGPU.OptiX
                 nextPtr += Marshal.SizeOf<OptixBuildInput>();
             }
 
-            var result = OptixAPI.Current.AccelComputeMemoryUsage(
-                deviceContext.DeviceContextPtr,
-                accelBuildOptions,
-                accelBuildInputs,
-                (uint)buildInputs.Length,
-                out var sizes);
+            var bufferSizes = new OptixAccelBufferSizes[1];
+            fixed (OptixAccelBufferSizes* bufferSizesPtr = bufferSizes)
+            {
+                //using var bufferSizes = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixAccelBufferSizes>());
+                //Marshal.StructureToPtr(sizes, bufferSizes, false);
 
-            OptixException.ThrowIfFailed(result);
-            return sizes;
+                var result = OptixAPI.Current.AccelComputeMemoryUsage(
+                    deviceContext.DeviceContextPtr,
+                    accelBuildOptions,
+                    accelBuildInputs,
+                    (uint)buildInputs.Length,
+                    (IntPtr)bufferSizesPtr);
+
+                OptixException.ThrowIfFailed(result);
+            }
+            return bufferSizes[0];
         }
     }
 }

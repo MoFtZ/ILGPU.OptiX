@@ -237,17 +237,21 @@ namespace Sample04
             // the optix samples mention something here about needing a pointer to the device pointer for the vertex and the index buffers
             // I think that is the issue
 
+            var vertexBuffers = stackalloc IntPtr[1];
+            vertexBuffers[0] = model.d_vertexBuffer.NativePtr;
+
             triangleInput.triangleArray.vertexFormat = OptixVertexFormat.OPTIX_VERTEX_FORMAT_FLOAT3;
             triangleInput.triangleArray.vertexStrideInBytes = (uint)sizeof(Vec3);
             triangleInput.triangleArray.numVerticies = (uint)model.vertexBuffer.Count;
-            triangleInput.triangleArray.vertexBuffers = model.d_vertexBuffer.NativePtr;
+            triangleInput.triangleArray.vertexBuffers = (IntPtr)vertexBuffers;
 
             triangleInput.triangleArray.indexFormat = OptixIndicesFormat.OPTIX_INDICES_FORMAT_UNSIGNED_INT3;
             triangleInput.triangleArray.indexStrideInBytes = (uint)sizeof(Vec3i);
             triangleInput.triangleArray.numIndexTriplets = (uint)model.triangleIndexBuffer.Count;
             triangleInput.triangleArray.indexBuffer = model.d_triangleIndexBuffer.NativePtr;
 
-            triangleInput.triangleArray.flags = (uint*)0; // this might not be right
+            var triangleInputFlags = stackalloc uint[1];
+            triangleInput.triangleArray.flags = triangleInputFlags;
             triangleInput.triangleArray.numSbtRecords = 1;
             triangleInput.triangleArray.sbtIndexOffsetBuffer = IntPtr.Zero;
             triangleInput.triangleArray.sbtIndexOffsetSizeInBytes = 0;
