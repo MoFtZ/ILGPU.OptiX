@@ -394,6 +394,54 @@ namespace ILGPU.OptiX
                 bufferSizes);
         }
 
+        /// <summary>
+        /// Builds Acceleration Structure
+        /// </summary>
+        /// <param name="context">The OptiX device context.</param>
+        /// <param name="stream">The CUDA stream.</param>
+        /// <param name="accelOptions">The acceleration structure build options.</param>
+        /// <param name="buildInputs">The build inputs.</param>
+        /// <param name="numBuildInputs">The build inputs count.</param>
+        /// <param name="tempBuffer">The temp build buffer, after this call the temp buffer is filled with garbage.</param>
+        /// <param name="tempBufferSizeInBytes">The temp buffer size.</param>
+        /// <param name="outputBuffer">The build output buffer.</param>
+        /// <param name="outputBufferSizeInBytes">The output buffer size.</param>
+        /// <param name="outputHandle">The OptixTraversableHandle pointer.</param>
+        /// <param name="emittedProperties">The acceleration structure emitted properties.</param>
+        /// <param name="numEmittedProperties">Emitted properties count.</param>
+        /// <returns>The OptiX result.</returns>
+        [CLSCompliant(false)]
+        public OptixResult AccelBuild(
+        IntPtr context,
+        IntPtr stream,
+        IntPtr accelOptions,
+        IntPtr buildInputs,
+        uint numBuildInputs,
+        IntPtr tempBuffer,
+        ulong tempBufferSizeInBytes,
+        IntPtr outputBuffer,
+        ulong outputBufferSizeInBytes,
+        IntPtr outputHandle,
+        IntPtr emittedProperties,
+        uint numEmittedProperties)
+        {
+            var func = Marshal.GetDelegateForFunctionPointer<AccelBuild>(functionTable.OptixAccelBuild);
+
+            return func(
+                context,
+                stream,
+                accelOptions,
+                buildInputs,
+                numBuildInputs,
+                tempBuffer,
+                tempBufferSizeInBytes,
+                outputBuffer,
+                outputBufferSizeInBytes,
+                outputHandle,
+                emittedProperties,
+                numEmittedProperties);
+        }
+
         #endregion
 
         #region IDisposable

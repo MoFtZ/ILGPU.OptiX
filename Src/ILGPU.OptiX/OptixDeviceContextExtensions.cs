@@ -11,6 +11,8 @@
 
 using ILGPU.OptiX.Interop;
 using ILGPU.OptiX.Util;
+using ILGPU.Runtime;
+using ILGPU.Runtime.Cuda;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -355,9 +357,6 @@ namespace ILGPU.OptiX
             var bufferSizes = new OptixAccelBufferSizes[1];
             fixed (OptixAccelBufferSizes* bufferSizesPtr = bufferSizes)
             {
-                //using var bufferSizes = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixAccelBufferSizes>());
-                //Marshal.StructureToPtr(sizes, bufferSizes, false);
-
                 var result = OptixAPI.Current.AccelComputeMemoryUsage(
                     deviceContext.DeviceContextPtr,
                     accelBuildOptions,
@@ -368,6 +367,70 @@ namespace ILGPU.OptiX
                 OptixException.ThrowIfFailed(result);
             }
             return bufferSizes[0];
+        }
+
+        /// <summary>
+        /// Builds Acceleration Structure
+        /// </summary>
+        /// <param name="deviceContext">The OptiX device context.</param>
+        /// <param name="stream">The current cuda stream.</param>
+        /// <param name="accelOptions">The acceleration structure build options.</param>
+        /// <param name="buildInputs">The build inputs.</param>
+        /// <param name="bufferSizes">The maximum required acceleration structure sizes.</param>
+        /// <param name="tempBuffer">The temp build buffer, after this call the temp buffer is filled with garbage.</param>
+        /// <param name="outputBuffer">The build output buffer.</param>
+        /// <returns>The output device pointer</returns>
+        [CLSCompliant(false)]
+        public unsafe static IntPtr AccelBuild(
+            this OptixDeviceContext deviceContext,
+            CudaStream stream,
+            OptixAccelBuildOptions accelOptions,
+            OptixBuildInput[] buildInputs,
+            OptixAccelBufferSizes bufferSizes,
+            MemoryBuffer<byte> tempBuffer,
+            MemoryBuffer<byte> outputBuffer,
+            OptixAccelEmitDesc[] emittedProperties)
+        {
+            using var accelBuildOptions = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixAccelBuildOptions>());
+            Marshal.StructureToPtr(accelOptions, accelBuildOptions, false);
+
+            using var accelBuildInputs = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixBuildInput>() * buildInputs.Length);
+            IntPtr nextPtr = accelBuildInputs;
+            foreach (var buildInput in buildInputs)
+            {
+                Marshal.StructureToPtr(buildInput, nextPtr, false);
+                nextPtr += Marshal.SizeOf<OptixBuildInput>();
+            }
+
+            using var emittedPropertiesInputs = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixAccelEmitDesc>() * emittedProperties.Length);
+            IntPtr nextPtr1 = emittedPropertiesInputs;
+            foreach (var emittedProperty in emittedProperties)
+            {
+                Marshal.StructureToPtr(emittedProperty, nextPtr1, false);
+                nextPtr1 += Marshal.SizeOf<OptixAccelEmitDesc>();
+            }
+
+            var asHandle = new IntPtr[1];
+            fixed (IntPtr* asHandlePtr = asHandle)
+            {
+                var result = OptixAPI.Current.AccelBuild(
+                    deviceContext.DeviceContextPtr,
+                    stream.StreamPtr,
+                    accelBuildOptions,
+                    accelBuildInputs,
+                    (uint)buildInputs.Length,
+                    tempBuffer.NativePtr,
+                    (ulong)tempBuffer.LengthInBytes,
+                    outputBuffer.NativePtr,
+                    (ulong)outputBuffer.LengthInBytes,
+                    (IntPtr)asHandlePtr,
+                    emittedPropertiesInputs,
+                    (uint)emittedProperties.Length);
+
+                OptixException.ThrowIfFailed(result);
+            }
+
+            return asHandle[0];
         }
     }
 }

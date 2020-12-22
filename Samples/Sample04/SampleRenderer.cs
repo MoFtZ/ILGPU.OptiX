@@ -88,6 +88,7 @@ namespace Sample04
         //world data
         Camera camera;
         TriangleMesh model;
+        MemoryBuffer<byte> asBuffer; 
         IntPtr traversable;
 
         public unsafe SampleRenderer(int width, int height, MainWindow window)
@@ -234,9 +235,6 @@ namespace Sample04
                 type = OptixBuildInputType.OPTIX_BUILD_INPUT_TYPE_TRIANGLES,
             };
 
-            // the optix samples mention something here about needing a pointer to the device pointer for the vertex and the index buffers
-            // I think that is the issue
-
             var vertexBuffers = stackalloc IntPtr[1];
             vertexBuffers[0] = model.d_vertexBuffer.NativePtr;
 
@@ -248,7 +246,7 @@ namespace Sample04
             triangleInput.triangleArray.indexFormat = OptixIndicesFormat.OPTIX_INDICES_FORMAT_UNSIGNED_INT3;
             triangleInput.triangleArray.indexStrideInBytes = (uint)sizeof(Vec3i);
             triangleInput.triangleArray.numIndexTriplets = (uint)model.triangleIndexBuffer.Count;
-            triangleInput.triangleArray.indexBuffer = model.d_triangleIndexBuffer.NativePtr;
+            triangleInput.triangleArray.indexBuffer = model.d_vertexBuffer.NativePtr;
 
             var triangleInputFlags = stackalloc uint[1];
             triangleInput.triangleArray.flags = triangleInputFlags;
@@ -265,6 +263,31 @@ namespace Sample04
             accelOptions.motionOptions.numKeys = 1;
 
             OptixAccelBufferSizes blasBufferSizes = deviceContext.AccelComputeMemoryUsage(accelOptions, triangleInput);
+
+            using MemoryBuffer<ulong> compactedSizeBuffer = accelerator.Allocate<ulong>(1);
+
+            OptixAccelEmitDesc[] emitDesc = {
+                new OptixAccelEmitDesc()
+                {
+                    type = OptixAccelPropertyType.OPTIX_PROPERTY_TYPE_COMPACTED_SIZE,
+                    result = compactedSizeBuffer.NativePtr
+                }
+            };
+
+            OptixBuildInput[] buildInputs =
+            {
+                triangleInput
+            };
+
+            using MemoryBuffer<byte> tempBuffer = accelerator.Allocate<byte>((long)blasBufferSizes.tempSizeInBytes);
+            using MemoryBuffer<byte> outputBuffer = accelerator.Allocate<byte>((long)blasBufferSizes.outputSizeInBytes);
+
+            asHandle = deviceContext.AccelBuild((CudaStream)accelerator.DefaultStream, accelOptions, buildInputs, blasBufferSizes, tempBuffer, outputBuffer, emitDesc);
+
+            compactedSizeBuffer.CopyTo(out ulong compactedSize, 0);
+            asBuffer = accelerator.Allocate<byte>((long)compactedSize);
+            //breaks here
+
 
             return asHandle;
         }

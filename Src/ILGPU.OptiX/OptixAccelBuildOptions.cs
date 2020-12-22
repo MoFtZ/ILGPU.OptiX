@@ -23,6 +23,12 @@ namespace ILGPU.OptiX
         OPTIX_BUILD_OPERATION_UPDATE = 0x2162,
     }
 
+    public enum OptixAccelPropertyType
+    {
+        OPTIX_PROPERTY_TYPE_COMPACTED_SIZE = 0x2181,
+        OPTIX_PROPERTY_TYPE_AABBS = 0x2182,
+    }
+
     [CLSCompliant(false)]
     public enum OptixMotionFlags : uint
     {
@@ -54,5 +60,11 @@ namespace ILGPU.OptiX
         public ulong outputSizeInBytes;
         public ulong tempSizeInBytes;
         public ulong tempUpdateSizeInBytes;
+    }
+
+    public struct OptixAccelEmitDesc
+    {
+        public IntPtr result;
+        public OptixAccelPropertyType type;
     }
 }
