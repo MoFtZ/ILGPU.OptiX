@@ -246,7 +246,7 @@ namespace Sample04
             triangleInput.triangleArray.indexFormat = OptixIndicesFormat.OPTIX_INDICES_FORMAT_UNSIGNED_INT3;
             triangleInput.triangleArray.indexStrideInBytes = (uint)sizeof(Vec3i);
             triangleInput.triangleArray.numIndexTriplets = (uint)model.triangleIndexBuffer.Count;
-            triangleInput.triangleArray.indexBuffer = model.d_vertexBuffer.NativePtr;
+            triangleInput.triangleArray.indexBuffer = model.d_triangleIndexBuffer.NativePtr;
 
             var triangleInputFlags = stackalloc uint[1];
             triangleInput.triangleArray.flags = triangleInputFlags;
