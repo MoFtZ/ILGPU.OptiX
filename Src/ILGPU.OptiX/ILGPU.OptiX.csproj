@@ -52,4 +52,5 @@
       </EmbeddedResource>
     </ItemGroup>
 
+    <Import Project="Properties\ILGPU.CheckStyles.targets" />
 </Project>
