@@ -9,10 +9,7 @@
 // Source License. See LICENSE.txt for details
 // ---------------------------------------------------------------------------------------
 
-using ILGPU.Backends.PTX;
-using ILGPU.IR;
-using ILGPU.IR.Intrinsics;
-using ILGPU.IR.Values;
+using ILGPU.Runtime.Cuda;
 using System;
 
 namespace ILGPU.OptiX
@@ -23,35 +20,30 @@ namespace ILGPU.OptiX
     [CLSCompliant(false)]
     public static class OptixGetLaunchIndex
     {
-        [IntrinsicImplementation]
-        public static uint X() => default;
-
-        [IntrinsicImplementation]
-        public static uint Y() => default;
-
-        [IntrinsicImplementation]
-        public static uint Z() => default;
-
-        public static class Generator
+        public static uint X
         {
-            /// <summary>
-            /// The Cuda (PTX) implementation.
-            /// </summary>
-            /// <remarks>
-            /// Note that this function signature corresponds to the PTX-backend specific
-            /// delegate type <see cref="PTXIntrinsic.Handler"/>.
-            /// </remarks>
-            public static void GeneratePTXCode(
-               PTXBackend backend,
-               PTXCodeGenerator codeGenerator,
-               Value value)
+            get
             {
-                var methodCall = value as MethodCall;
-                var register = codeGenerator.AllocateHardware(value);
-                var registerName = PTXRegisterAllocator.GetStringRepresentation(register);
-                var sourceName = methodCall.Target.Source.Name.ToLower();
-                codeGenerator.Builder.AppendLine(
-                    $"call (%{registerName}), _optix_get_launch_index_{sourceName}, ();");
+                CudaAsm.Emit("call (%0), _optix_get_launch_index_x, ();", out uint x);
+                return x;
+            }
+        }
+
+        public static uint Y
+        {
+            get
+            {
+                CudaAsm.Emit("call (%0), _optix_get_launch_index_y, ();", out uint y);
+                return y;
+            }
+        }
+
+        public static uint Z
+        {
+            get
+            {
+                CudaAsm.Emit("call (%0), _optix_get_launch_index_z, ();", out uint z);
+                return z;
             }
         }
     }

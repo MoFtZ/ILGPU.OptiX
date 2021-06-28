@@ -7,8 +7,8 @@ namespace Sample04
     {
         public unsafe static void __raygen__renderFrame(LaunchParams launchParams)
         {
-            var ix = OptixGetLaunchIndex.X();
-            var iy = OptixGetLaunchIndex.Y();
+            var ix = OptixGetLaunchIndex.X;
+            var iy = OptixGetLaunchIndex.Y;
             int frameID = launchParams.FrameID;
 
             uint r = ((uint)((ix + frameID) % 256));

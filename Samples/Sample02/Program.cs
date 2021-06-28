@@ -13,8 +13,8 @@ namespace Sample02
     {
         public unsafe static void __raygen__renderFrame(LaunchParams launchParams)
         {
-            var ix = OptixGetLaunchIndex.X();
-            var iy = OptixGetLaunchIndex.Y();
+            var ix = OptixGetLaunchIndex.X;
+            var iy = OptixGetLaunchIndex.Y;
 
             uint r = (ix % 256);
             uint g = (iy % 256);

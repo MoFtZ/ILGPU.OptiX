@@ -24,38 +24,6 @@ namespace ILGPU.OptiX
         public static Context.Builder InitOptiX(this Context.Builder builder)
         {
             OptixException.ThrowIfFailed(OptixAPI.Current.Init());
-            var intrinsicManager = builder.GetIntrinsicManager();
-
-            // Register the Cuda instrinsics for OptiX
-            var remappingType = typeof(OptixGetLaunchIndex);
-            var methodInfo = remappingType.GetMethod(
-                nameof(OptixGetLaunchIndex.X),
-                BindingFlags.Public | BindingFlags.Static);
-            intrinsicManager.RegisterMethod(
-                methodInfo,
-                new PTXIntrinsic(
-                    typeof(OptixGetLaunchIndex.Generator),
-                    nameof(OptixGetLaunchIndex.Generator.GeneratePTXCode),
-                    IntrinsicImplementationMode.GenerateCode));
-            methodInfo = remappingType.GetMethod(
-                nameof(OptixGetLaunchIndex.Y),
-                BindingFlags.Public | BindingFlags.Static);
-            intrinsicManager.RegisterMethod(
-                methodInfo,
-                new PTXIntrinsic(
-                    typeof(OptixGetLaunchIndex.Generator),
-                    nameof(OptixGetLaunchIndex.Generator.GeneratePTXCode),
-                    IntrinsicImplementationMode.GenerateCode));
-            methodInfo = remappingType.GetMethod(
-                nameof(OptixGetLaunchIndex.Z),
-                BindingFlags.Public | BindingFlags.Static);
-            intrinsicManager.RegisterMethod(
-                methodInfo,
-                new PTXIntrinsic(
-                    typeof(OptixGetLaunchIndex.Generator),
-                    nameof(OptixGetLaunchIndex.Generator.GeneratePTXCode),
-                    IntrinsicImplementationMode.GenerateCode));
-
             return builder;
         }
 
