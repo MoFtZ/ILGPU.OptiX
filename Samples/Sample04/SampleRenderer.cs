@@ -240,7 +240,7 @@ namespace Sample04
             triangleInput.TriangleArray.VertexFormat = OptixVertexFormat.OPTIX_VERTEX_FORMAT_FLOAT3;
             triangleInput.TriangleArray.VertexStrideInBytes = (uint)sizeof(Vec3);
             triangleInput.TriangleArray.NumVerticies = (uint)model.vertexBuffer.Count;
-            triangleInput.TriangleArray.VertexBuffers = (IntPtr)vertexBuffers;
+            triangleInput.TriangleArray.VertexBuffers = new IntPtr(vertexBuffers);
 
             triangleInput.TriangleArray.IndexFormat = OptixIndicesFormat.OPTIX_INDICES_FORMAT_UNSIGNED_INT3;
             triangleInput.TriangleArray.IndexStrideInBytes = (uint)sizeof(Vec3i);

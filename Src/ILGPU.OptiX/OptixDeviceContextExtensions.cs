@@ -50,7 +50,7 @@ namespace ILGPU.OptiX
                 moduleCompileOptions,
                 pipelineCompileOptions,
                 out var raygenEntryFunctionName);
-            using var name = SafeHGlobal.StringToHGlobalAnsi(raygenEntryFunctionName);
+            using var name = SafeHGlobal.FromString(raygenEntryFunctionName);
             using var programGroup = deviceContext.CreateProgramGroup(
                 new OptixProgramGroupDesc()
                 {
@@ -92,7 +92,7 @@ namespace ILGPU.OptiX
                 moduleCompileOptions,
                 pipelineCompileOptions,
                 out var missEntryFunctionName);
-            using var name = SafeHGlobal.StringToHGlobalAnsi(missEntryFunctionName);
+            using var name = SafeHGlobal.FromString(missEntryFunctionName);
 
             using var programGroup = deviceContext.CreateProgramGroup(
                 new OptixProgramGroupDesc()
@@ -140,7 +140,7 @@ namespace ILGPU.OptiX
                     moduleCompileOptions,
                     pipelineCompileOptions,
                     out var closestHitEntryFunctionName);
-            using var chName = SafeHGlobal.StringToHGlobalAnsi(closestHitEntryFunctionName);
+            using var chName = SafeHGlobal.FromString(closestHitEntryFunctionName);
 
             using var anyHitModule =
                 deviceContext.CreateModule(
@@ -149,7 +149,7 @@ namespace ILGPU.OptiX
                     moduleCompileOptions,
                     pipelineCompileOptions,
                     out var anyHitEntryFunctionName);
-            using var ahName = SafeHGlobal.StringToHGlobalAnsi(anyHitEntryFunctionName);
+            using var ahName = SafeHGlobal.FromString(anyHitEntryFunctionName);
 
             using var intersectionModule =
                 deviceContext.CreateModule(
@@ -158,7 +158,7 @@ namespace ILGPU.OptiX
                     moduleCompileOptions,
                     pipelineCompileOptions,
                     out var intersectionEntryFunctionName);
-            using var isName = SafeHGlobal.StringToHGlobalAnsi(intersectionEntryFunctionName);
+            using var isName = SafeHGlobal.FromString(intersectionEntryFunctionName);
 
             using var programGroup = deviceContext.CreateProgramGroup(
                 new OptixProgramGroupDesc()
@@ -316,7 +316,7 @@ namespace ILGPU.OptiX
             if (deviceContext == null)
                 throw new ArgumentNullException(nameof(deviceContext));
 
-            using var programGroupsPtr = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<IntPtr>() * programGroups.Length);
+            using var programGroupsPtr = SafeHGlobal.Alloc<IntPtr>(programGroups.Length);
             IntPtr nextPtr = programGroupsPtr;
 
             foreach (var programGroup in programGroups)
@@ -353,29 +353,17 @@ namespace ILGPU.OptiX
             if (deviceContext == null)
                 throw new ArgumentNullException(nameof(deviceContext));
 
-            using var accelBuildOptions = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixAccelBuildOptions>());
-            Marshal.StructureToPtr(accelOptions, accelBuildOptions, false);
-            Trace.WriteLine(Marshal.SizeOf<OptixBuildInput>());
-            using var accelBuildInputs = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixBuildInput>() * buildInputs.Length);
-            IntPtr nextPtr = accelBuildInputs;
-            foreach (var buildInput in buildInputs)
-            {
-                Marshal.StructureToPtr(buildInput, nextPtr, false);
-                nextPtr += Marshal.SizeOf<OptixBuildInput>();
-            }
+            using var accelBuildOptions = SafeHGlobal.AllocFrom(accelOptions);
+            using var accelBuildInputs = SafeHGlobal.AllocFrom<OptixBuildInput>(buildInputs);
 
-            var bufferSizes = new OptixAccelBufferSizes[1];
-            fixed (OptixAccelBufferSizes* bufferSizesPtr = bufferSizes)
-            {
-                var result = OptixAPI.Current.AccelComputeMemoryUsage(
+            var bufferSizes = stackalloc OptixAccelBufferSizes[1];
+            OptixException.ThrowIfFailed(
+                OptixAPI.Current.AccelComputeMemoryUsage(
                     deviceContext.DeviceContextPtr,
                     accelBuildOptions,
                     accelBuildInputs,
                     (uint)buildInputs.Length,
-                    (IntPtr)bufferSizesPtr);
-
-                OptixException.ThrowIfFailed(result);
-            }
+                    new IntPtr(bufferSizes)));
             return bufferSizes[0];
         }
 
@@ -406,29 +394,13 @@ namespace ILGPU.OptiX
             if (stream is not CudaStream cudaStream)
                 throw new ArgumentOutOfRangeException(nameof(stream));
 
-            using var accelBuildOptions = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixAccelBuildOptions>());
-            Marshal.StructureToPtr(accelOptions, accelBuildOptions, false);
+            using var accelBuildOptions = SafeHGlobal.AllocFrom(accelOptions);
+            using var accelBuildInputs = SafeHGlobal.AllocFrom(buildInputs);
+            using var emittedPropertiesInputs = SafeHGlobal.AllocFrom(emittedProperties);
 
-            using var accelBuildInputs = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixBuildInput>() * buildInputs.Length);
-            IntPtr nextPtr = accelBuildInputs;
-            foreach (var buildInput in buildInputs)
-            {
-                Marshal.StructureToPtr(buildInput, nextPtr, false);
-                nextPtr += Marshal.SizeOf<OptixBuildInput>();
-            }
-
-            using var emittedPropertiesInputs = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixAccelEmitDesc>() * emittedProperties.Length);
-            IntPtr nextPtr1 = emittedPropertiesInputs;
-            foreach (var emittedProperty in emittedProperties)
-            {
-                Marshal.StructureToPtr(emittedProperty, nextPtr1, false);
-                nextPtr1 += Marshal.SizeOf<OptixAccelEmitDesc>();
-            }
-
-            var asHandle = new IntPtr[1];
-            fixed (IntPtr* asHandlePtr = asHandle)
-            {
-                var result = OptixAPI.Current.AccelBuild(
+            var asHandle = stackalloc IntPtr[1];
+            OptixException.ThrowIfFailed(
+                OptixAPI.Current.AccelBuild(
                     deviceContext.DeviceContextPtr,
                     cudaStream.StreamPtr,
                     accelBuildOptions,
@@ -438,13 +410,9 @@ namespace ILGPU.OptiX
                     (ulong)tempBuffer.LengthInBytes,
                     outputBuffer.BaseView.LoadEffectiveAddressAsPtr(),
                     (ulong)outputBuffer.LengthInBytes,
-                    (IntPtr)asHandlePtr,
+                    new IntPtr(asHandle),
                     emittedPropertiesInputs,
-                    (uint)emittedProperties.Length);
-
-                OptixException.ThrowIfFailed(result);
-            }
-
+                    (uint)emittedProperties.Length));
             return asHandle[0];
         }
     }

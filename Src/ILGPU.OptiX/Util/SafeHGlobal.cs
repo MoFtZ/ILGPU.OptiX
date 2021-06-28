@@ -28,18 +28,57 @@ namespace ILGPU.OptiX.Util
         /// <summary>
         /// Convenience function to allocate a block of memory.
         /// </summary>
-        public static SafeHGlobal AllocHGlobal(int cb)
+        public static SafeHGlobal Alloc(int cb) =>
+            new SafeHGlobal(Marshal.AllocHGlobal(cb));
+
+        /// <summary>
+        /// Convenience function to allocate a block of memory.
+        /// </summary>
+        public static SafeHGlobal Alloc<T>() =>
+            Alloc<T>(1);
+
+        /// <summary>
+        /// Convenience function to allocate a block of memory.
+        /// </summary>
+        /// <param name="numElements">The number of elements of size T.</param>
+        public static SafeHGlobal Alloc<T>(int numElements) =>
+            Alloc(Marshal.SizeOf<T>() * numElements);
+
+        /// <summary>
+        /// Convenience function to allocate a block of memory.
+        /// </summary>
+        /// <param name="element">Single element to marshal.</param>
+        public static SafeHGlobal AllocFrom<T>(T element)
+            where T : struct
         {
-            return new SafeHGlobal(Marshal.AllocHGlobal(cb));
+            T[] elements = new T[1] { element };
+            return AllocFrom<T>(elements.AsSpan());
         }
 
         /// <summary>
         /// Convenience function to allocate a block of memory.
         /// </summary>
-        public static SafeHGlobal StringToHGlobalAnsi(string? str)
+        /// <param name="elements">Elements to marshal.</param>
+        public static SafeHGlobal AllocFrom<T>(ReadOnlySpan<T> elements)
+            where T : struct
         {
-            return new SafeHGlobal(Marshal.StringToHGlobalAnsi(str));
+            var elementSize = Marshal.SizeOf<T>();
+            var handle = Alloc(elementSize * elements.Length);
+
+            IntPtr nextPtr = handle;
+            foreach (var element in elements)
+            {
+                Marshal.StructureToPtr(element, nextPtr, false);
+                nextPtr += elementSize;
+            }
+            return handle;
         }
+
+        /// <summary>
+        /// Convenience function to allocate a block of memory.
+        /// </summary>
+        public static SafeHGlobal FromString(string? str) =>
+            new SafeHGlobal(Marshal.StringToHGlobalAnsi(str));
 
         #endregion
 

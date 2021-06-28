@@ -105,11 +105,8 @@ namespace ILGPU.OptiX
         {
             var func = Marshal.GetDelegateForFunctionPointer<ModuleCreateFromPTX>(functionTable.OptixModuleCreateFromPTX);
 
-            using var moduleCompileOptionsPtr = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixModuleCompileOptions>());
-            Marshal.StructureToPtr(moduleCompileOptions, moduleCompileOptionsPtr, false);
-
-            using var pipelineCompileOptionsPtr = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixPipelineCompileOptions>());
-            Marshal.StructureToPtr(pipelineCompileOptions, pipelineCompileOptionsPtr, false);
+            using var moduleCompileOptionsPtr = SafeHGlobal.AllocFrom(moduleCompileOptions);
+            using var pipelineCompileOptionsPtr = SafeHGlobal.AllocFrom(pipelineCompileOptions);
 
             var ptxStringBytes = Encoding.UTF8.GetBytes(ptxString);
             var logBytes = new byte[DEFAULT_LOG_SIZE];
@@ -121,9 +118,9 @@ namespace ILGPU.OptiX
                     deviceContext,
                     moduleCompileOptionsPtr,
                     pipelineCompileOptionsPtr,
-                    (IntPtr)ptxStringPtr,
+                    new IntPtr(ptxStringPtr),
                     (nuint)ptxStringBytes.Length,
-                    (IntPtr)logPtr,
+                    new IntPtr(logPtr),
                     ref logLength,
                     out module
                 );
@@ -169,16 +166,8 @@ namespace ILGPU.OptiX
         {
             var func = Marshal.GetDelegateForFunctionPointer<ProgramGroupCreate>(functionTable.OptixProgramGroupCreate);
 
-            using var programGroupOptionsPtr = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixProgramGroupOptions>());
-            Marshal.StructureToPtr(programGroupOptions, programGroupOptionsPtr, false);
-
-            using var programDescriptionsPtr = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixProgramGroupDesc>() * programDescriptions.Length);
-            IntPtr nextPtr = programDescriptionsPtr;
-            foreach (var programDescription in programDescriptions)
-            {
-                Marshal.StructureToPtr(programDescription, nextPtr, false);
-                nextPtr += Marshal.SizeOf<OptixProgramGroupDesc>();
-            }
+            using var programGroupOptionsPtr = SafeHGlobal.AllocFrom(programGroupOptions);
+            using var programDescriptionsPtr = SafeHGlobal.AllocFrom(programDescriptions);
 
             var logBytes = new byte[DEFAULT_LOG_SIZE];
             fixed (byte* logPtr = logBytes)
@@ -189,7 +178,7 @@ namespace ILGPU.OptiX
                     programDescriptionsPtr,
                     (uint)programDescriptions.Length,
                     programGroupOptionsPtr,
-                    (IntPtr)logPtr,
+                    new IntPtr(logPtr),
                     ref logLength,
                     out programGroup
                 );
@@ -239,11 +228,8 @@ namespace ILGPU.OptiX
         {
             var func = Marshal.GetDelegateForFunctionPointer<PipelineCreate>(functionTable.OptixPipelineCreate);
 
-            using var pipelineCompileOptionsPtr = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixPipelineCompileOptions>());
-            Marshal.StructureToPtr(pipelineCompileOptions, pipelineCompileOptionsPtr, false);
-
-            using var pipelineLinkOptionsPtr = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixPipelineLinkOptions>());
-            Marshal.StructureToPtr(pipelineLinkOptions, pipelineLinkOptionsPtr, false);
+            using var pipelineCompileOptionsPtr = SafeHGlobal.AllocFrom(pipelineCompileOptions);
+            using var pipelineLinkOptionsPtr = SafeHGlobal.AllocFrom(pipelineLinkOptions);
 
             var logBytes = new byte[DEFAULT_LOG_SIZE];
             fixed (byte* logPtr = logBytes)
@@ -255,7 +241,7 @@ namespace ILGPU.OptiX
                     pipelineLinkOptionsPtr,
                     programGroups,
                     numProgramGroups,
-                    (IntPtr)logPtr,
+                    new IntPtr(logPtr),
                     ref logLength,
                     out pipeline
                 );

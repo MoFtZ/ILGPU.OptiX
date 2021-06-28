@@ -72,8 +72,7 @@ namespace ILGPU.OptiX
             var launchParamsBuffer = accelerator.Allocate1D<TLaunchParams>(1);
             launchParamsBuffer.View.CopyFromCPU(stream, ref launchParams, 1);
 
-            var sbtPtr = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixShaderBindingTable>());
-            Marshal.StructureToPtr(sbt, sbtPtr, false);
+            var sbtPtr = SafeHGlobal.AllocFrom(sbt);
 
             OptixException.ThrowIfFailed(
                 OptixAPI.Current.Launch(

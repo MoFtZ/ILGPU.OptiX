@@ -2,3 +2,9 @@
 
 # CA1305: Specify IFormatProvider
 dotnet_diagnostic.CA1305.severity = none
+
+# IDE0022: Use block body for methods
+csharp_style_expression_bodied_methods = true
+
+# IDE0090: Use 'new(...)'
+csharp_style_implicit_object_creation_when_type_is_apparent = false

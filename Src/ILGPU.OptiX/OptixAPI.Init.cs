@@ -54,7 +54,7 @@ namespace ILGPU.OptiX
                 return OptixResult.OPTIX_ERROR_ENTRY_SYMBOL_NOT_FOUND;
 
             var functionTableSize = Marshal.SizeOf<OptixFunctionTable>();
-            using var functionTablePtr = SafeHGlobal.AllocHGlobal(functionTableSize);
+            using var functionTablePtr = SafeHGlobal.Alloc(functionTableSize);
 
             var query =
                 Marshal.GetDelegateForFunctionPointer<OptixQueryFunctionTable>(proc);
