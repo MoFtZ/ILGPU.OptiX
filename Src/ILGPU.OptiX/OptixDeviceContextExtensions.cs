@@ -14,7 +14,6 @@ using ILGPU.OptiX.Util;
 using ILGPU.Runtime;
 using ILGPU.Runtime.Cuda;
 using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 // disable: max_line_length
@@ -168,11 +167,11 @@ namespace ILGPU.OptiX
                     Hitgroup =
                         new OptixProgramGroupHitgroup()
                         {
-                            ModuleCH = closestHitModule?.ModulePtr ?? IntPtr.Zero,
+                            ModuleCH = closestHitModule.ModulePtr,
                             EntryFunctionNameCH = chName,
-                            ModuleAH = anyHitModule?.ModulePtr ?? IntPtr.Zero,
+                            ModuleAH = anyHitModule.ModulePtr,
                             EntryFunctionNameAH = ahName,
-                            ModuleIS = intersectionModule?.ModulePtr ?? IntPtr.Zero,
+                            ModuleIS = intersectionModule.ModulePtr,
                             EntryFunctionNameIS = isName
                         }
                 });
@@ -180,9 +179,9 @@ namespace ILGPU.OptiX
             return new OptixKernel(
                 new[]
                 {
-                    closestHitModule?.Transfer(),
-                    anyHitModule?.Transfer(),
-                    intersectionModule?.Transfer()
+                    closestHitModule.Transfer(),
+                    anyHitModule.Transfer(),
+                    intersectionModule.Transfer()
                 },
                 programGroup.Transfer());
         }
@@ -203,17 +202,16 @@ namespace ILGPU.OptiX
             string kernelPrefix,
             OptixModuleCompileOptions moduleCompileOptions,
             OptixPipelineCompileOptions pipelineCompileOptions,
-            out string entryFunctionName)
+            out string? entryFunctionName)
             where TLaunchParams : unmanaged
         {
             if (deviceContext == null)
                 throw new ArgumentNullException(nameof(deviceContext));
 
-            var m = kernel?.Method;
-            if (m == null)
+            if (kernel?.Method == null)
             {
                 entryFunctionName = null;
-                return null;
+                return OptixModule.CreateEmpty();
             }
 
             // Compile the action into PTX
@@ -245,6 +243,9 @@ namespace ILGPU.OptiX
             OptixPipelineCompileOptions pipelineCompileOptions,
             string ptxString)
         {
+            if (deviceContext == null)
+                throw new ArgumentNullException(nameof(deviceContext));
+
             var result = OptixAPI.Current.ModuleCreateFromPTX(
                 deviceContext.DeviceContextPtr,
                 moduleCompileOptions,
@@ -283,6 +284,9 @@ namespace ILGPU.OptiX
             OptixProgramGroupOptions programGroupOptions,
             params OptixProgramGroupDesc[] programDescriptions)
         {
+            if (deviceContext == null)
+                throw new ArgumentNullException(nameof(deviceContext));
+
             var result =
                 OptixAPI.Current.ProgramGroupCreate(
                     deviceContext.DeviceContextPtr,
@@ -309,6 +313,9 @@ namespace ILGPU.OptiX
             OptixPipelineLinkOptions pipelineLinkOptions,
             params OptixProgramGroup[] programGroups)
         {
+            if (deviceContext == null)
+                throw new ArgumentNullException(nameof(deviceContext));
+
             using var programGroupsPtr = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<IntPtr>() * programGroups.Length);
             IntPtr nextPtr = programGroupsPtr;
 
@@ -343,6 +350,9 @@ namespace ILGPU.OptiX
             OptixAccelBuildOptions accelOptions,
             params OptixBuildInput[] buildInputs)
         {
+            if (deviceContext == null)
+                throw new ArgumentNullException(nameof(deviceContext));
+
             using var accelBuildOptions = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixAccelBuildOptions>());
             Marshal.StructureToPtr(accelOptions, accelBuildOptions, false);
             Trace.WriteLine(Marshal.SizeOf<OptixBuildInput>());
@@ -376,21 +386,26 @@ namespace ILGPU.OptiX
         /// <param name="stream">The current cuda stream.</param>
         /// <param name="accelOptions">The acceleration structure build options.</param>
         /// <param name="buildInputs">The build inputs.</param>
-        /// <param name="bufferSizes">The maximum required acceleration structure sizes.</param>
         /// <param name="tempBuffer">The temp build buffer, after this call the temp buffer is filled with garbage.</param>
         /// <param name="outputBuffer">The build output buffer.</param>
         /// <returns>The output device pointer</returns>
         [CLSCompliant(false)]
         public unsafe static IntPtr AccelBuild(
             this OptixDeviceContext deviceContext,
-            CudaStream stream,
+            AcceleratorStream stream,
             OptixAccelBuildOptions accelOptions,
-            OptixBuildInput[] buildInputs,
-            OptixAccelBufferSizes bufferSizes,
+            ReadOnlySpan<OptixBuildInput> buildInputs,
             ArrayView1D<byte, Stride1D.Dense> tempBuffer,
             ArrayView1D<byte, Stride1D.Dense> outputBuffer,
-            OptixAccelEmitDesc[] emittedProperties)
+            ReadOnlySpan<OptixAccelEmitDesc> emittedProperties)
         {
+            if (deviceContext == null)
+                throw new ArgumentNullException(nameof(deviceContext));
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+            if (stream is not CudaStream cudaStream)
+                throw new ArgumentOutOfRangeException(nameof(stream));
+
             using var accelBuildOptions = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixAccelBuildOptions>());
             Marshal.StructureToPtr(accelOptions, accelBuildOptions, false);
 
@@ -415,7 +430,7 @@ namespace ILGPU.OptiX
             {
                 var result = OptixAPI.Current.AccelBuild(
                     deviceContext.DeviceContextPtr,
-                    stream.StreamPtr,
+                    cudaStream.StreamPtr,
                     accelBuildOptions,
                     accelBuildInputs,
                     (uint)buildInputs.Length,

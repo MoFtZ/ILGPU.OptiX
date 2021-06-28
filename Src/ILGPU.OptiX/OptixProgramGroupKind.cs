@@ -9,6 +9,9 @@
 // Source License. See LICENSE.txt for details
 // ---------------------------------------------------------------------------------------
 
+#pragma warning disable CA1008 // Enums should have zero value
+#pragma warning disable CA1707 // Identifiers should not contain underscores
+
 namespace ILGPU.OptiX
 {
     /// <summary>
@@ -44,3 +47,6 @@ namespace ILGPU.OptiX
         OPTIX_PROGRAM_GROUP_KIND_CALLABLES = 0x2425
     }
 }
+
+#pragma warning restore CA1008 // Enums should have zero value
+#pragma warning restore CA1707 // Identifiers should not contain underscores

@@ -1,8 +1,6 @@
-﻿using ILGPU;
+﻿using System.Collections.Generic;
+using ILGPU;
 using ILGPU.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sample04
 {
@@ -54,13 +52,13 @@ namespace Sample04
             vertexBuffer.Add(xfm.xfmPoint(new Vec3(1, 0, 1)));
             vertexBuffer.Add(xfm.xfmPoint(new Vec3(0, 1, 1)));
             vertexBuffer.Add(xfm.xfmPoint(new Vec3(1, 1, 1)));
-      
+
             for (int i = 0; i < 12; i++)
             {
                 triangleIndexBuffer.Add(firstVertexID + new Vec3i(indices[3 * i + 0], indices[3 * i + 1], indices[3 * i + 2]));
             }
 
-            if(d_triangleIndexBuffer != null)
+            if (d_triangleIndexBuffer != null)
             {
                 d_triangleIndexBuffer.Dispose();
                 d_vertexBuffer.Dispose();

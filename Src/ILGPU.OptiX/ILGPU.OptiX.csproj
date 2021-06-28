@@ -26,6 +26,7 @@
     <PropertyGroup>
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
         <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup Condition="$([MSBuild]::IsOsPlatform('Windows'))">

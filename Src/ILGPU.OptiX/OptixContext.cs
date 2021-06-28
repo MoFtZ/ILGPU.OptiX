@@ -9,12 +9,8 @@
 // Source License. See LICENSE.txt for details
 // ---------------------------------------------------------------------------------------
 
-using ILGPU.Backends.PTX;
-using ILGPU.IR;
-using ILGPU.IR.Intrinsics;
 using ILGPU.Runtime.Cuda;
 using System;
-using System.Reflection;
 
 namespace ILGPU.OptiX
 {

@@ -1,16 +1,13 @@
-﻿using ILGPU;
+﻿using System;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Windows;
+using ILGPU;
 using ILGPU.OptiX;
 using ILGPU.OptiX.Interop;
 using ILGPU.Runtime;
 using ILGPU.Runtime.Cuda;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Windows;
 
 namespace Sample04
 {
@@ -88,7 +85,7 @@ namespace Sample04
         //world data
         Camera camera;
         TriangleMesh model;
-        MemoryBuffer1D<byte, Stride1D.Dense> asBuffer; 
+        MemoryBuffer1D<byte, Stride1D.Dense> asBuffer;
         IntPtr traversable;
 
         public unsafe SampleRenderer(int width, int height, MainWindow window)
@@ -101,25 +98,25 @@ namespace Sample04
             deviceContext = accelerator.CreateDeviceContext();
 
             moduleCompileOptions = new OptixModuleCompileOptions()
-                {
-                    MaxRegisterCount = 50,
-                    OptimizationLevel = OptixCompileOptimizationLevel.OPTIX_COMPILE_OPTIMIZATION_DEFAULT,
-                    DebugLevel = OptixCompileDebugLevel.OPTIX_COMPILE_DEBUG_LEVEL_NONE
-                };
+            {
+                MaxRegisterCount = 50,
+                OptimizationLevel = OptixCompileOptimizationLevel.OPTIX_COMPILE_OPTIMIZATION_DEFAULT,
+                DebugLevel = OptixCompileDebugLevel.OPTIX_COMPILE_DEBUG_LEVEL_NONE
+            };
 
             pipelineCompileOptions = new OptixPipelineCompileOptions()
-                {
-                    TraversableGraphFlags = OptixTraversableGraphFlags.OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_SINGLE_GAS,
-                    NumPayloadValues = 2,
-                    NumAttributeValues = 2,
-                    ExceptionFlags = OptixExceptionFlags.OPTIX_EXCEPTION_FLAG_NONE,
-                    PipelineLaunchParamsVariableName = OptixLaunchParams.VariableName
-                };
+            {
+                TraversableGraphFlags = OptixTraversableGraphFlags.OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_SINGLE_GAS,
+                NumPayloadValues = 2,
+                NumAttributeValues = 2,
+                ExceptionFlags = OptixExceptionFlags.OPTIX_EXCEPTION_FLAG_NONE,
+                PipelineLaunchParamsVariableName = OptixLaunchParams.VariableName
+            };
 
             pipelineLinkOptions = new OptixPipelineLinkOptions()
-                {
-                    MaxTraceDepth = 2
-                };
+            {
+                MaxTraceDepth = 2
+            };
 
             raygenKernel = deviceContext.CreateRaygenKernel<LaunchParams>(
                 devicePrograms.__raygen__renderFrame,
@@ -165,15 +162,15 @@ namespace Sample04
             hitgroupRecordsBuffer = accelerator.Allocate1D(hitgroupRecordsArray);
 
             sbt = new OptixShaderBindingTable()
-                {
-                    RaygenRecord = raygenRecordsBuffer.NativePtr,
-                    MissRecordBase = missRecordsBuffer.NativePtr,
-                    MissRecordStrideInBytes = (uint)Marshal.SizeOf<MissRecord>(),
-                    MissRecordCount = (uint)missRecordsBuffer.Length,
-                    HitgroupRecordBase = hitgroupRecordsBuffer.NativePtr,
-                    HitgroupRecordStrideInBytes = (uint)Marshal.SizeOf<HitgroupRecord>(),
-                    HitgroupRecordCount = (uint)hitgroupRecordsBuffer.Length
-                };
+            {
+                RaygenRecord = raygenRecordsBuffer.NativePtr,
+                MissRecordBase = missRecordsBuffer.NativePtr,
+                MissRecordStrideInBytes = (uint)Marshal.SizeOf<MissRecord>(),
+                MissRecordCount = (uint)missRecordsBuffer.Length,
+                HitgroupRecordBase = hitgroupRecordsBuffer.NativePtr,
+                HitgroupRecordStrideInBytes = (uint)Marshal.SizeOf<HitgroupRecord>(),
+                HitgroupRecordCount = (uint)hitgroupRecordsBuffer.Length
+            };
 
 
             model = new TriangleMesh(accelerator);
@@ -212,7 +209,7 @@ namespace Sample04
             {
                 this.width = width;
                 this.height = height;
-                
+
                 colorBuffer0 = accelerator.Allocate1D<byte>(width * height * sizeof(uint));
                 colorBuffer0.MemSetToZero();
                 colorBuffer1 = accelerator.Allocate1D<byte>(width * height * sizeof(uint));
@@ -234,35 +231,35 @@ namespace Sample04
 
             OptixBuildInput triangleInput = new OptixBuildInput()
             {
-                type = OptixBuildInputType.OPTIX_BUILD_INPUT_TYPE_TRIANGLES,
+                Type = OptixBuildInputType.OPTIX_BUILD_INPUT_TYPE_TRIANGLES,
             };
 
             var vertexBuffers = stackalloc IntPtr[1];
             vertexBuffers[0] = model.d_vertexBuffer.NativePtr;
 
-            triangleInput.triangleArray.vertexFormat = OptixVertexFormat.OPTIX_VERTEX_FORMAT_FLOAT3;
-            triangleInput.triangleArray.vertexStrideInBytes = (uint)sizeof(Vec3);
-            triangleInput.triangleArray.numVerticies = (uint)model.vertexBuffer.Count;
-            triangleInput.triangleArray.vertexBuffers = (IntPtr)vertexBuffers;
+            triangleInput.TriangleArray.VertexFormat = OptixVertexFormat.OPTIX_VERTEX_FORMAT_FLOAT3;
+            triangleInput.TriangleArray.VertexStrideInBytes = (uint)sizeof(Vec3);
+            triangleInput.TriangleArray.NumVerticies = (uint)model.vertexBuffer.Count;
+            triangleInput.TriangleArray.VertexBuffers = (IntPtr)vertexBuffers;
 
-            triangleInput.triangleArray.indexFormat = OptixIndicesFormat.OPTIX_INDICES_FORMAT_UNSIGNED_INT3;
-            triangleInput.triangleArray.indexStrideInBytes = (uint)sizeof(Vec3i);
-            triangleInput.triangleArray.numIndexTriplets = (uint)model.triangleIndexBuffer.Count;
-            triangleInput.triangleArray.indexBuffer = model.d_triangleIndexBuffer.NativePtr;
+            triangleInput.TriangleArray.IndexFormat = OptixIndicesFormat.OPTIX_INDICES_FORMAT_UNSIGNED_INT3;
+            triangleInput.TriangleArray.IndexStrideInBytes = (uint)sizeof(Vec3i);
+            triangleInput.TriangleArray.NumIndexTriplets = (uint)model.triangleIndexBuffer.Count;
+            triangleInput.TriangleArray.IndexBuffer = model.d_triangleIndexBuffer.NativePtr;
 
             var triangleInputFlags = stackalloc uint[1];
-            triangleInput.triangleArray.flags = triangleInputFlags;
-            triangleInput.triangleArray.numSbtRecords = 1;
-            triangleInput.triangleArray.sbtIndexOffsetBuffer = IntPtr.Zero;
-            triangleInput.triangleArray.sbtIndexOffsetSizeInBytes = 0;
-            triangleInput.triangleArray.sbtIndexOffsetStrideInBytes = 0;
+            triangleInput.TriangleArray.Flags = triangleInputFlags;
+            triangleInput.TriangleArray.NumSbtRecords = 1;
+            triangleInput.TriangleArray.SbtIndexOffsetBuffer = IntPtr.Zero;
+            triangleInput.TriangleArray.SbtIndexOffsetSizeInBytes = 0;
+            triangleInput.TriangleArray.SbtIndexOffsetStrideInBytes = 0;
 
             OptixAccelBuildOptions accelOptions = new OptixAccelBuildOptions()
             {
-                buildFlags = (uint)OptixBuildFlags.OPTIX_BUILD_FLAG_NONE | (uint)OptixBuildFlags.OPTIX_BUILD_FLAG_ALLOW_COMPACTION,
-                operation = OptixBuildOperation.OPTIX_BUILD_OPERATION_BUILD
+                BuildFlags = OptixBuildFlags.OPTIX_BUILD_FLAG_NONE | OptixBuildFlags.OPTIX_BUILD_FLAG_ALLOW_COMPACTION,
+                Operation = OptixBuildOperation.OPTIX_BUILD_OPERATION_BUILD
             };
-            accelOptions.motionOptions.numKeys = 1;
+            accelOptions.MotionOptions.NumKeys = 1;
 
             OptixAccelBufferSizes blasBufferSizes = deviceContext.AccelComputeMemoryUsage(accelOptions, triangleInput);
 
@@ -271,8 +268,8 @@ namespace Sample04
             OptixAccelEmitDesc[] emitDesc = {
                 new OptixAccelEmitDesc()
                 {
-                    type = OptixAccelPropertyType.OPTIX_PROPERTY_TYPE_COMPACTED_SIZE,
-                    result = compactedSizeBuffer.NativePtr
+                    Type = OptixAccelPropertyType.OPTIX_PROPERTY_TYPE_COMPACTED_SIZE,
+                    Result = compactedSizeBuffer.NativePtr
                 }
             };
 
@@ -281,15 +278,13 @@ namespace Sample04
                 triangleInput
             };
 
-            using MemoryBuffer1D<byte, Stride1D.Dense> tempBuffer = accelerator.Allocate1D<byte>((long)blasBufferSizes.tempSizeInBytes);
-            using MemoryBuffer1D<byte, Stride1D.Dense> outputBuffer = accelerator.Allocate1D<byte>((long)blasBufferSizes.outputSizeInBytes);
+            using MemoryBuffer1D<byte, Stride1D.Dense> tempBuffer = accelerator.Allocate1D<byte>((long)blasBufferSizes.TempSizeInBytes);
+            using MemoryBuffer1D<byte, Stride1D.Dense> outputBuffer = accelerator.Allocate1D<byte>((long)blasBufferSizes.OutputSizeInBytes);
 
-            asHandle = deviceContext.AccelBuild((CudaStream)accelerator.DefaultStream, accelOptions, buildInputs, blasBufferSizes, tempBuffer, outputBuffer, emitDesc);
+            asHandle = deviceContext.AccelBuild(accelerator.DefaultStream, accelOptions, buildInputs, tempBuffer, outputBuffer, emitDesc);
 
             compactedSizeBuffer.View.CopyToCPU(out ulong compactedSize, 1);
             asBuffer = accelerator.Allocate1D<byte>((long)compactedSize);
-            //breaks here
-
 
             return asHandle;
         }
@@ -305,7 +300,7 @@ namespace Sample04
             launchParams.FrameID++;
 
             accelerator.OptixLaunch(
-                accelerator.DefaultStream as CudaStream,
+                accelerator.DefaultStream,
                 pipeline,
                 launchParams,
                 sbt,

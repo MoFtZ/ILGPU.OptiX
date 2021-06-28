@@ -1,6 +1,20 @@
-﻿using ILGPU.Util;
+﻿// ---------------------------------------------------------------------------------------
+//                                      ILGPU.OptiX
+//                        Copyright (c) 2020 ILGPU OptiX Project
+//                                    www.ilgpu.net
+//
+// File: SafeHGlobal.cs
+//
+// This file is part of ILGPU and is distributed under the University of Illinois Open
+// Source License. See LICENSE.txt for details
+// ---------------------------------------------------------------------------------------
+
+using ILGPU.Util;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+
+#pragma warning disable CA2225 // Operator overloads have named alternates
 
 namespace ILGPU.OptiX.Util
 {
@@ -22,7 +36,7 @@ namespace ILGPU.OptiX.Util
         /// <summary>
         /// Convenience function to allocate a block of memory.
         /// </summary>
-        public static SafeHGlobal StringToHGlobalAnsi(string str)
+        public static SafeHGlobal StringToHGlobalAnsi(string? str)
         {
             return new SafeHGlobal(Marshal.StringToHGlobalAnsi(str));
         }
@@ -43,13 +57,17 @@ namespace ILGPU.OptiX.Util
         /// <summary>
         /// Constructs a new wrapper over the memory handle.
         /// </summary>
-        /// <param name="ptr"></param>
-        public SafeHGlobal(IntPtr ptr)
+        public SafeHGlobal(IntPtr nativePtr)
         {
-            NativePtr = ptr;
+            NativePtr = nativePtr;
         }
 
-        public static implicit operator IntPtr(SafeHGlobal s) => s.NativePtr;
+        [SuppressMessage(
+            "Design",
+            "CA1062:Validate arguments of public methods",
+            Justification = "Should not throw within implicit operator")]
+        public static implicit operator IntPtr(SafeHGlobal s) =>
+            s.NativePtr;
 
         #endregion
 
@@ -72,3 +90,5 @@ namespace ILGPU.OptiX.Util
         #endregion
     }
 }
+
+#pragma warning restore CA2225 // Operator overloads have named alternates

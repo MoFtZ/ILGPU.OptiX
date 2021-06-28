@@ -11,6 +11,7 @@
 
 using ILGPU.Util;
 using System;
+using System.Collections.Immutable;
 
 namespace ILGPU.OptiX
 {
@@ -24,25 +25,25 @@ namespace ILGPU.OptiX
     {
         #region Static
 
-        public static readonly string RAYGEN_PREFIX = "__raygen__";
-        public static readonly string MISS_PREFIX = "__miss__";
-        public static readonly string CLOSESTHIT_PREFIX = "__closesthit__";
-        public static readonly string ANYHIT_PREFIX = "__anyhit__";
-        public static readonly string INTERSECTION_PREFIX = "__intersection__";
+        internal const string RAYGEN_PREFIX = "__raygen__";
+        internal const string MISS_PREFIX = "__miss__";
+        internal const string CLOSESTHIT_PREFIX = "__closesthit__";
+        internal const string ANYHIT_PREFIX = "__anyhit__";
+        internal const string INTERSECTION_PREFIX = "__intersection__";
 
         #endregion
 
         #region Properties
 
         /// <summary>
-        /// The OptiX module.
+        /// The OptiX modules.
         /// </summary>
-        public OptixModule[] Modules { get; private set; }
+        public ImmutableArray<OptixModule> Modules { get; }
 
         /// <summary>
         /// The OptiX program group.
         /// </summary>
-        public OptixProgramGroup ProgramGroup { get; private set; }
+        public OptixProgramGroup ProgramGroup { get; }
 
         #endregion
 
@@ -55,7 +56,7 @@ namespace ILGPU.OptiX
         /// <param name="programGroup">The OptiX program group.</param>
         public OptixKernel(OptixModule[] modules, OptixProgramGroup programGroup)
         {
-            Modules = modules;
+            Modules = modules.ToImmutableArray();
             ProgramGroup = programGroup;
         }
 
@@ -69,13 +70,11 @@ namespace ILGPU.OptiX
             if (disposing)
             {
                 ProgramGroup?.Dispose();
-                ProgramGroup = null;
 
                 if (Modules != null)
                 {
                     foreach (var module in Modules)
                         module?.Dispose();
-                    Modules = null;
                 }
             }
             base.Dispose(disposing);

@@ -9,6 +9,9 @@
 // Source License. See LICENSE.txt for details
 // ---------------------------------------------------------------------------------------
 
+#pragma warning disable CA1051 // Do not declare visible instance fields
+#pragma warning disable CA1815 // Override equals and operator equals on value types
+
 namespace ILGPU.OptiX
 {
     public struct OptixProgramGroupOptions
@@ -19,3 +22,6 @@ namespace ILGPU.OptiX
         public int Placeholder;
     }
 }
+
+#pragma warning restore CA1051 // Do not declare visible instance fields
+#pragma warning restore CA1815 // Override equals and operator equals on value types

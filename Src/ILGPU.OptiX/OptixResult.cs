@@ -9,11 +9,10 @@
 // Source License. See LICENSE.txt for details
 // ---------------------------------------------------------------------------------------
 
-using System.Diagnostics.CodeAnalysis;
+#pragma warning disable CA1707 // Identifiers should not contain underscores
 
 namespace ILGPU.OptiX
 {
-    [SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores")]
     public enum OptixResult
     {
         OPTIX_SUCCESS = 0,
@@ -54,3 +53,5 @@ namespace ILGPU.OptiX
         OPTIX_ERROR_UNKNOWN = 7999,
     }
 }
+
+#pragma warning restore CA1707 // Identifiers should not contain underscores

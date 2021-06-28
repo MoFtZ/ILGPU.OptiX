@@ -17,6 +17,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 // disable: max_line_length
+#pragma warning disable CA1707 // Identifiers should not contain underscores
 
 namespace ILGPU.OptiX
 {
@@ -161,7 +162,7 @@ namespace ILGPU.OptiX
         [CLSCompliant(false)]
         public unsafe OptixResult ProgramGroupCreate(
             IntPtr deviceContext,
-            OptixProgramGroupDesc[] programDescriptions,
+            ReadOnlySpan<OptixProgramGroupDesc> programDescriptions,
             OptixProgramGroupOptions programGroupOptions,
             out IntPtr programGroup,
             out string logString)
@@ -368,7 +369,7 @@ namespace ILGPU.OptiX
         }
 
         /// <summary>
-        /// Calculates accelleration structure size
+        /// Calculates acceleration structure size.
         /// </summary>
         /// <param name="context">The OptiX device context.</param>
         /// <param name="accelOptions">The acceleration structure build options.</param>
@@ -395,7 +396,7 @@ namespace ILGPU.OptiX
         }
 
         /// <summary>
-        /// Builds Acceleration Structure
+        /// Builds acceleration structure.
         /// </summary>
         /// <param name="context">The OptiX device context.</param>
         /// <param name="stream">The CUDA stream.</param>
@@ -459,3 +460,5 @@ namespace ILGPU.OptiX
         #endregion
     }
 }
+
+#pragma warning restore CA1707 // Identifiers should not contain underscores

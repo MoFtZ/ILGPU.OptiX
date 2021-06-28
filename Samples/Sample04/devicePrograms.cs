@@ -1,8 +1,5 @@
 ﻿using ILGPU;
 using ILGPU.OptiX;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sample04
 {

@@ -52,6 +52,27 @@ namespace ILGPU.OptiX
             OptixResult = optixResult;
         }
 
+        /// <summary>
+        /// Constructs a new OptiX exception.
+        /// </summary>
+        /// <param name="message">The exception message.</param>
+        public OptixException(string message)
+            : base(message)
+        {
+            OptixResult = OptixResult.OPTIX_ERROR_UNKNOWN;
+        }
+
+        /// <summary>
+        /// Constructs a new OptiX exception.
+        /// </summary>
+        /// <param name="message">The exception message.</param>
+        /// <param name="innerException">The inner exception.</param>
+        public OptixException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+            OptixResult = OptixResult.OPTIX_ERROR_UNKNOWN;
+        }
+
         /// <summary cref="Exception(SerializationInfo, StreamingContext)"/>
         private OptixException(SerializationInfo info, StreamingContext context)
             : base(info, context)

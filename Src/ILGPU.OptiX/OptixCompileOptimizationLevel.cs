@@ -9,6 +9,8 @@
 // Source License. See LICENSE.txt for details
 // ---------------------------------------------------------------------------------------
 
+#pragma warning disable CA1707 // Identifiers should not contain underscores
+
 namespace ILGPU.OptiX
 {
     public enum OptixCompileOptimizationLevel
@@ -39,3 +41,5 @@ namespace ILGPU.OptiX
         OPTIX_COMPILE_OPTIMIZATION_LEVEL_3 = 0x2343,
     }
 }
+
+#pragma warning restore CA1707 // Identifiers should not contain underscores

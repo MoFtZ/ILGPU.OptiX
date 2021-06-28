@@ -34,9 +34,12 @@ namespace ILGPU.OptiX
             uint depth)
             where TLaunchParams : unmanaged
         {
+            if (accelerator == null)
+                throw new ArgumentNullException(nameof(accelerator));
+
             OptixLaunch(
                 accelerator,
-                accelerator.DefaultStream as CudaStream,
+                accelerator.DefaultStream,
                 pipeline,
                 launchParams,
                 sbt,
@@ -48,7 +51,7 @@ namespace ILGPU.OptiX
         [CLSCompliant(false)]
         public static void OptixLaunch<TLaunchParams>(
             this CudaAccelerator accelerator,
-            CudaStream stream,
+            AcceleratorStream stream,
             OptixPipeline pipeline,
             TLaunchParams launchParams,
             OptixShaderBindingTable sbt,
@@ -61,6 +64,8 @@ namespace ILGPU.OptiX
                 throw new ArgumentNullException(nameof(accelerator));
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
+            if (stream is not CudaStream cudaStream)
+                throw new ArgumentOutOfRangeException(nameof(stream));
             if (pipeline == null)
                 throw new ArgumentNullException(nameof(pipeline));
 
@@ -73,7 +78,7 @@ namespace ILGPU.OptiX
             OptixException.ThrowIfFailed(
                 OptixAPI.Current.Launch(
                     pipeline.PipelinePtr,
-                    (accelerator.DefaultStream as CudaStream).StreamPtr,
+                    cudaStream.StreamPtr,
                     launchParamsBuffer.NativePtr,
                     (uint)Marshal.SizeOf<TLaunchParams>(),
                     sbtPtr,

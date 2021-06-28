@@ -138,8 +138,7 @@ namespace ILGPU.OptiX
         ulong outputBufferSizeInBytes,
         IntPtr outputHandle,
         IntPtr emittedProperties,
-        uint numEmittedProperties
-        );
+        uint numEmittedProperties);
 }
 
 #pragma warning restore CS0649 // Field is never assigned to

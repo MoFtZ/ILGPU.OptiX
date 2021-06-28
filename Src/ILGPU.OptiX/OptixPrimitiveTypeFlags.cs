@@ -9,8 +9,16 @@
 // Source License. See LICENSE.txt for details
 // ---------------------------------------------------------------------------------------
 
+using System;
+using System.Diagnostics.CodeAnalysis;
+
+#pragma warning disable CA1707 // Identifiers should not contain underscores
+#pragma warning disable CA1711 // Identifiers should not have incorrect suffix
+
 namespace ILGPU.OptiX
 {
+    [Flags]
+    [SuppressMessage("Usage", "CA2217:Do not mark enums with FlagsAttribute")]
     public enum OptixPrimitiveTypeFlags
     {
         /// <summary>
@@ -39,3 +47,6 @@ namespace ILGPU.OptiX
         OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE = 1 << 31,
     }
 }
+
+#pragma warning restore CA1707 // Identifiers should not contain underscores
+#pragma warning restore CA1711 // Identifiers should not have incorrect suffix

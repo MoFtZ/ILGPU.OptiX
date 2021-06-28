@@ -10,11 +10,12 @@
 // ---------------------------------------------------------------------------------------
 
 using System;
-using System.Diagnostics.CodeAnalysis;
+
+#pragma warning disable CA1028 // Enum Storage should be Int32
+#pragma warning disable CA1707 // Identifiers should not contain underscores
 
 namespace ILGPU.OptiX
 {
-    [SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores")]
     [CLSCompliant(false)]
     public enum OptixDeviceContextValidationMode : uint
     {
@@ -22,3 +23,6 @@ namespace ILGPU.OptiX
         OPTIX_DEVICE_CONTEXT_VALIDATION_MODE_ALL = 0xFFFFFFFF
     }
 }
+
+#pragma warning restore CA1028 // Enum Storage should be Int32
+#pragma warning restore CA1707 // Identifiers should not contain underscores

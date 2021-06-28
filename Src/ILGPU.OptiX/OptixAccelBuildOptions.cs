@@ -1,12 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// ---------------------------------------------------------------------------------------
+//                                      ILGPU.OptiX
+//                        Copyright (c) 2020 ILGPU OptiX Project
+//                                    www.ilgpu.net
+//
+// File: OptixAccelBuildOptions.cs
+//
+// This file is part of ILGPU and is distributed under the University of Illinois Open
+// Source License. See LICENSE.txt for details
+// ---------------------------------------------------------------------------------------
+
+using System;
+using System.Diagnostics.CodeAnalysis;
+
+#pragma warning disable CA1008 // Enums should have zero value
+#pragma warning disable CA1028 // Enum Storage should be Int32
+#pragma warning disable CA1051 // Do not declare visible instance fields
+#pragma warning disable CA1707 // Identifiers should not contain underscores
+#pragma warning disable CA1815 // Override equals and operator equals on value types
 
 namespace ILGPU.OptiX
 {
     [CLSCompliant(false)]
+    [Flags]
+    [SuppressMessage(
+        "Naming",
+        "CA1711:Identifiers should not have incorrect suffix")]
     public enum OptixBuildFlags : uint
     {
         OPTIX_BUILD_FLAG_NONE = 0,
@@ -30,6 +48,10 @@ namespace ILGPU.OptiX
     }
 
     [CLSCompliant(false)]
+    [Flags]
+    [SuppressMessage(
+        "Naming",
+        "CA1711:Identifiers should not have incorrect suffix")]
     public enum OptixMotionFlags : uint
     {
         OPTIX_MOTION_FLAG_NONE = 0u,
@@ -40,31 +62,37 @@ namespace ILGPU.OptiX
     [CLSCompliant(false)]
     public struct OptixMotionOptions
     {
-        public ushort numKeys;
-        public ushort flags;
-        public float timeBegin;
-        public float timeEnd;
+        public ushort NumKeys;
+        public ushort Flags;
+        public float TimeBegin;
+        public float TimeEnd;
     }
 
     [CLSCompliant(false)]
     public struct OptixAccelBuildOptions
     {
-        public uint buildFlags;
-        public OptixBuildOperation operation;
-        public OptixMotionOptions motionOptions;
+        public OptixBuildFlags BuildFlags;
+        public OptixBuildOperation Operation;
+        public OptixMotionOptions MotionOptions;
     }
 
     [CLSCompliant(false)]
     public struct OptixAccelBufferSizes
     {
-        public ulong outputSizeInBytes;
-        public ulong tempSizeInBytes;
-        public ulong tempUpdateSizeInBytes;
+        public ulong OutputSizeInBytes;
+        public ulong TempSizeInBytes;
+        public ulong TempUpdateSizeInBytes;
     }
 
     public struct OptixAccelEmitDesc
     {
-        public IntPtr result;
-        public OptixAccelPropertyType type;
+        public IntPtr Result;
+        public OptixAccelPropertyType Type;
     }
 }
+
+#pragma warning restore CA1008 // Enums should have zero value
+#pragma warning restore CA1051 // Do not declare visible instance fields
+#pragma warning restore CA1028 // Enum Storage should be Int32
+#pragma warning restore CA1707 // Identifiers should not contain underscores
+#pragma warning restore CA1815 // Override equals and operator equals on value types

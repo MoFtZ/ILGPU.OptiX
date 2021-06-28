@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Sample03
+﻿namespace Sample03
 {
     public unsafe struct LaunchParams
     {

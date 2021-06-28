@@ -1,9 +1,6 @@
-﻿using ILGPU.Algorithms;
+﻿using System.Numerics;
+using ILGPU.Algorithms;
 using ILGPU.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
 
 namespace Sample04
 {
@@ -54,7 +51,7 @@ namespace Sample04
 
             axis = OrthoNormalBasis.fromZY(Vec3.unitVector(lookAt - origin), up);
 
-            aspectRatio = ((float)width / (float)height);
+            aspectRatio = (width / (float)height);
             cameraPlaneDist = 1.0f / XMath.Tan(camera.verticalFov * XMath.PI / 360.0f);
             this.verticalFov = camera.verticalFov;
             reciprocalHeight = 1.0f / height;
@@ -76,7 +73,7 @@ namespace Sample04
 
             axis = OrthoNormalBasis.fromZY(Vec3.unitVector(lookAt - origin), up);
 
-            aspectRatio = ((float)width / (float)height);
+            aspectRatio = (width / (float)height);
             cameraPlaneDist = 1.0f / XMath.Tan(verticalFov * XMath.PI / 360.0f);
             reciprocalHeight = 1.0f / height;
             reciprocalWidth = 1.0f / width;
@@ -96,7 +93,7 @@ namespace Sample04
 
             axis = OrthoNormalBasis.fromZY(Vec3.unitVector(lookAt - origin), up);
 
-            aspectRatio = ((float)width / (float)height);
+            aspectRatio = (width / (float)height);
             cameraPlaneDist = 1.0f / XMath.Tan(verticalFov * XMath.PI / 360.0f);
             reciprocalHeight = 1.0f / height;
             reciprocalWidth = 1.0f / width;

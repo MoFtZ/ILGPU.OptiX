@@ -11,6 +11,9 @@
 
 using System.Runtime.InteropServices;
 
+#pragma warning disable CA1051 // Do not declare visible instance fields
+#pragma warning disable CA1815 // Override equals and operator equals on value types
+
 namespace ILGPU.OptiX.Interop
 {
     [StructLayout(LayoutKind.Explicit)]
@@ -37,3 +40,6 @@ namespace ILGPU.OptiX.Interop
         public OptixProgramGroupHitgroup Hitgroup;
     }
 }
+
+#pragma warning restore CA1051 // Do not declare visible instance fields
+#pragma warning restore CA1815 // Override equals and operator equals on value types

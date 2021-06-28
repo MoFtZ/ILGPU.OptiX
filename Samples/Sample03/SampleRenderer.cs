@@ -1,16 +1,13 @@
-﻿using ILGPU;
+﻿using System;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Windows;
+using ILGPU;
 using ILGPU.OptiX;
 using ILGPU.OptiX.Interop;
 using ILGPU.Runtime;
 using ILGPU.Runtime.Cuda;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Windows;
 
 namespace Sample03
 {
@@ -95,25 +92,25 @@ namespace Sample03
             deviceContext = accelerator.CreateDeviceContext();
 
             moduleCompileOptions = new OptixModuleCompileOptions()
-                {
-                    MaxRegisterCount = 50,
-                    OptimizationLevel = OptixCompileOptimizationLevel.OPTIX_COMPILE_OPTIMIZATION_DEFAULT,
-                    DebugLevel = OptixCompileDebugLevel.OPTIX_COMPILE_DEBUG_LEVEL_NONE
-                };
+            {
+                MaxRegisterCount = 50,
+                OptimizationLevel = OptixCompileOptimizationLevel.OPTIX_COMPILE_OPTIMIZATION_DEFAULT,
+                DebugLevel = OptixCompileDebugLevel.OPTIX_COMPILE_DEBUG_LEVEL_NONE
+            };
 
             pipelineCompileOptions = new OptixPipelineCompileOptions()
-                {
-                    TraversableGraphFlags = OptixTraversableGraphFlags.OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_SINGLE_GAS,
-                    NumPayloadValues = 2,
-                    NumAttributeValues = 2,
-                    ExceptionFlags = OptixExceptionFlags.OPTIX_EXCEPTION_FLAG_NONE,
-                    PipelineLaunchParamsVariableName = OptixLaunchParams.VariableName
-                };
+            {
+                TraversableGraphFlags = OptixTraversableGraphFlags.OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_SINGLE_GAS,
+                NumPayloadValues = 2,
+                NumAttributeValues = 2,
+                ExceptionFlags = OptixExceptionFlags.OPTIX_EXCEPTION_FLAG_NONE,
+                PipelineLaunchParamsVariableName = OptixLaunchParams.VariableName
+            };
 
             pipelineLinkOptions = new OptixPipelineLinkOptions()
-                {
-                    MaxTraceDepth = 2
-                };
+            {
+                MaxTraceDepth = 2
+            };
 
             raygenKernel = deviceContext.CreateRaygenKernel<LaunchParams>(
                 devicePrograms.__raygen__renderFrame,
@@ -159,15 +156,15 @@ namespace Sample03
             hitgroupRecordsBuffer = accelerator.Allocate1D(hitgroupRecordsArray);
 
             sbt = new OptixShaderBindingTable()
-                {
-                    RaygenRecord = raygenRecordsBuffer.NativePtr,
-                    MissRecordBase = missRecordsBuffer.NativePtr,
-                    MissRecordStrideInBytes = (uint)Marshal.SizeOf<MissRecord>(),
-                    MissRecordCount = (uint)missRecordsBuffer.Length,
-                    HitgroupRecordBase = hitgroupRecordsBuffer.NativePtr,
-                    HitgroupRecordStrideInBytes = (uint)Marshal.SizeOf<HitgroupRecord>(),
-                    HitgroupRecordCount = (uint)hitgroupRecordsBuffer.Length
-                };
+            {
+                RaygenRecord = raygenRecordsBuffer.NativePtr,
+                MissRecordBase = missRecordsBuffer.NativePtr,
+                MissRecordStrideInBytes = (uint)Marshal.SizeOf<MissRecord>(),
+                MissRecordCount = (uint)missRecordsBuffer.Length,
+                HitgroupRecordBase = hitgroupRecordsBuffer.NativePtr,
+                HitgroupRecordStrideInBytes = (uint)Marshal.SizeOf<HitgroupRecord>(),
+                HitgroupRecordCount = (uint)hitgroupRecordsBuffer.Length
+            };
 
             resize(width, height);
             flipBitmap = accelerator.LoadAutoGroupedStreamKernel<Index1D, int, int, ArrayView<byte>, ArrayView<byte>>(devicePrograms.flipBitmap);
@@ -196,7 +193,7 @@ namespace Sample03
             {
                 this.width = width;
                 this.height = height;
-                
+
                 colorBuffer0 = accelerator.Allocate1D<byte>(width * height * sizeof(uint));
                 colorBuffer0.MemSetToZero();
                 colorBuffer1 = accelerator.Allocate1D<byte>(width * height * sizeof(uint));
@@ -219,7 +216,7 @@ namespace Sample03
             launchParams.FrameID++;
 
             accelerator.OptixLaunch(
-                accelerator.DefaultStream as CudaStream,
+                accelerator.DefaultStream,
                 pipeline,
                 launchParams,
                 sbt,

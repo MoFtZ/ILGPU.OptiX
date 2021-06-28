@@ -1,5 +1,5 @@
-﻿using ILGPU.OptiX;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using ILGPU.OptiX;
 
 namespace Sample02
 {

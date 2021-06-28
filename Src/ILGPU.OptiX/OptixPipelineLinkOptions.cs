@@ -11,6 +11,9 @@
 
 using System;
 
+#pragma warning disable CA1051 // Do not declare visible instance fields
+#pragma warning disable CA1815 // Override equals and operator equals on value types
+
 namespace ILGPU.OptiX
 {
     [CLSCompliant(false)]
@@ -28,3 +31,6 @@ namespace ILGPU.OptiX
         public OptixCompileDebugLevel DebugLevel;
     }
 }
+
+#pragma warning restore CA1051 // Do not declare visible instance fields
+#pragma warning restore CA1815 // Override equals and operator equals on value types

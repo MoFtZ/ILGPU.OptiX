@@ -1,11 +1,11 @@
-﻿using ILGPU;
+﻿using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
+using ILGPU;
 using ILGPU.OptiX;
 using ILGPU.OptiX.Interop;
 using ILGPU.Runtime;
 using ILGPU.Runtime.Cuda;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace Sample02
 {
@@ -137,7 +137,7 @@ namespace Sample02
 
             // Launch pipeline.
             accelerator.OptixLaunch(
-                accelerator.DefaultStream as CudaStream,
+                accelerator.DefaultStream,
                 pipeline,
                 launchParams,
                 sbt,
@@ -151,9 +151,9 @@ namespace Sample02
             using var pngStream = File.OpenWrite("sample02.png");
             var writer = new StbImageWriteSharp.ImageWriter();
             writer.WritePng(
-                outputArray, 
-                launchParams.FbSizeX, 
-                launchParams.FbSizeY, 
+                outputArray,
+                launchParams.FbSizeX,
+                launchParams.FbSizeY,
                 StbImageWriteSharp.ColorComponents.RedGreenBlueAlpha,
                 pngStream);
         }

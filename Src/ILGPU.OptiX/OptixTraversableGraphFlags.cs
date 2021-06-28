@@ -9,8 +9,15 @@
 // Source License. See LICENSE.txt for details
 // ---------------------------------------------------------------------------------------
 
+using System;
+
+#pragma warning disable CA1008 // Enums should have zero value
+#pragma warning disable CA1707 // Identifiers should not contain underscores
+#pragma warning disable CA1711 // Identifiers should not have incorrect suffix
+
 namespace ILGPU.OptiX
 {
+    [Flags]
     public enum OptixTraversableGraphFlags
     {
         /// <summary>
@@ -36,3 +43,7 @@ namespace ILGPU.OptiX
         OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_SINGLE_LEVEL_INSTANCING = 1 << 1,
     }
 }
+
+#pragma warning restore CA1008 // Enums should have zero value
+#pragma warning restore CA1707 // Identifiers should not contain underscores
+#pragma warning restore CA1711 // Identifiers should not have incorrect suffix

@@ -116,11 +116,15 @@ namespace ILGPU.OptiX
             return LoadOptixWindowsDLLFromConfigurationManager(filename);
         }
 
+
         /// <summary>
         /// Attempts to load the OptiX DLL from the Configuration Manager.
         /// </summary>
         /// <param name="filename">The name of the OptiX DLL to load.</param>
         /// <returns>A handle to the loaded DLL module.</returns>
+        [SuppressMessage(
+            "Design",
+            "CA1031:Do not catch general exception types")]
         private static IntPtr LoadOptixWindowsDLLFromConfigurationManager(string filename)
         {
             // If we didn't find it, go looking in the register store.  Since nvoptix.dll
@@ -223,13 +227,15 @@ namespace ILGPU.OptiX
             var valueKind = regKey.GetValueKind(ValueName);
             if (valueKind == RegistryValueKind.MultiString)
             {
-                string path = ((string[])regKey.GetValue(ValueName))[0];
-                return path;
+                string[]? paths = ((string[]?)regKey.GetValue(ValueName));
+                if (paths == null)
+                    return string.Empty;
+                return paths[0];
             }
             else if (valueKind == RegistryValueKind.String)
             {
-                string path = (string)regKey.GetValue(ValueName);
-                return path;
+                string? path = (string?)regKey.GetValue(ValueName);
+                return path ?? string.Empty;
             }
             else
             {
@@ -246,12 +252,14 @@ namespace ILGPU.OptiX
             #region Library Loader
 
             [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+            [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories)]
             public static extern IntPtr LoadLibrary(string lpFileName);
 
             [DllImport(
                 "kernel32.dll",
                 EntryPoint = "GetProcAddress",
                 CharSet = CharSet.Ansi)]
+            [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories)]
             [SuppressMessage(
                 "Globalization",
                 "CA2101:Specify marshaling for P/Invoke string arguments",
@@ -261,6 +269,7 @@ namespace ILGPU.OptiX
                 string lpProcName);
 
             [DllImport("kernel32.dll")]
+            [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories)]
             public static extern bool FreeLibrary(IntPtr hModule);
 
             #endregion
@@ -300,12 +309,14 @@ namespace ILGPU.OptiX
             public const uint KEY_QUERY_VALUE = 0x0001;
 
             [DllImport("setupapi.dll", CharSet = CharSet.Unicode)]
+            [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories)]
             public static extern int CM_Get_Device_ID_List_Size(
                 ref uint idListlen,
                 string lpFilter,
                 uint ulFlags);
 
             [DllImport("setupapi.dll", CharSet = CharSet.Unicode)]
+            [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories)]
             public static extern int CM_Get_Device_ID_List(
                 string lpFilter,
                 char[] buffer,
@@ -313,12 +324,14 @@ namespace ILGPU.OptiX
                 uint ulFlags);
 
             [DllImport("setupapi.dll", CharSet = CharSet.Unicode)]
+            [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories)]
             public static extern int CM_Locate_DevNode(
                 ref IntPtr devNode,
                 string deviceName,
                 uint ulFlags);
 
             [DllImport("setupapi.dll")]
+            [DefaultDllImportSearchPaths(DllImportSearchPath.SafeDirectories)]
             public static extern int CM_Open_DevNode_Key(
                 IntPtr devNode,
                 uint samDesired,

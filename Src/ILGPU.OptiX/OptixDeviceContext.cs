@@ -9,7 +9,6 @@
 // Source License. See LICENSE.txt for details
 // ---------------------------------------------------------------------------------------
 
-using ILGPU.Backends;
 using ILGPU.Backends.PTX;
 using ILGPU.Runtime.Cuda;
 using ILGPU.Util;
@@ -33,12 +32,12 @@ namespace ILGPU.OptiX
         /// <summary>
         /// The Cuda accelerator.
         /// </summary>
-        public CudaAccelerator Accelerator { get; private set; }
+        public CudaAccelerator Accelerator { get; }
 
         /// <summary>
         /// Custom PTX backend.
         /// </summary>
-        public PTXBackend Backend { get; private set; }
+        public PTXBackend Backend { get; }
 
         #endregion
 
@@ -87,10 +86,6 @@ namespace ILGPU.OptiX
                     OptixAPI.Current.DeviceContextDestroy(DeviceContextPtr);
                     DeviceContextPtr = IntPtr.Zero;
                 }
-
-                // NB: Do not dispose of the Cuda accelerator. We are holding a
-                // reference to it for convenience only.
-                Accelerator = null;
             }
             base.Dispose(disposing);
         }

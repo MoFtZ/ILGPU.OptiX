@@ -12,6 +12,7 @@
 using ILGPU.Backends.EntryPoints;
 using ILGPU.Backends.PTX;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
 // disable: max_line_length
@@ -45,7 +46,8 @@ namespace ILGPU.OptiX
             var m = kernel.Method;
             var backend = deviceContext.Backend;
             var entryPointDesc = EntryPointDescription.FromExplicitlyGroupedKernel(m);
-            var ptx = backend.Compile(entryPointDesc, default) as PTXCompiledKernel;
+            if (backend.Compile(entryPointDesc, default) is not PTXCompiledKernel ptx)
+                throw new NotSupportedException();
 
             // WORKAROUND: OptiX loads the launch parameters into constant memory.
             // We generate a new entry point kernel that will load the launch parameters
@@ -70,6 +72,11 @@ namespace ILGPU.OptiX
             return ptxAssembly;
         }
 
+        [SuppressMessage(
+            "Globalization",
+            "CA1307:Specify StringComparison",
+            Justification = "string.Replace(string, string, StringComparison) not " +
+                "available in net47")]
         internal static string GenerateEntryKernel<TLaunchParams>(
             PTXBackend backend,
             string entryFunctionName,
@@ -79,15 +86,14 @@ namespace ILGPU.OptiX
             // Load the dummy entry point kernel to work out the details of the
             // launch parameters.
             Action<TLaunchParams> x = EntryPointKernel;
-            var placeholderKernel =
-                backend.Compile(
+            if (backend.Compile(
                     EntryPointDescription.FromExplicitlyGroupedKernel(x.Method),
-                    default) as PTXCompiledKernel;
-
+                    default) is not PTXCompiledKernel placeholderKernel)
+                throw new NotSupportedException();
             var ptx = placeholderKernel.PTXAssembly;
 
             // Strip anything before the entry point.
-            ptx = ptx.Substring(ptx.IndexOf(".visible .entry"));
+            ptx = ptx.Substring(ptx.IndexOf(".visible .entry", StringComparison.Ordinal));
 
             // Renaming the entry point to the preferred name.
             ptx = Regex.Replace(
@@ -122,7 +128,7 @@ namespace ILGPU.OptiX
             // Find the first load instruction, and inject a new parameter.
             const string ParamName = "callParam0";
             ptx = ptx.Insert(
-                ptx.IndexOf("ld.const"),
+                ptx.IndexOf("ld.const", StringComparison.Ordinal),
                 $".param .align 8 .b8 {ParamName}[{variableSize}];{Environment.NewLine}");
 
             // Replace all the store instructions to use the new parameter.

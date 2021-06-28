@@ -11,6 +11,9 @@
 
 using System;
 
+#pragma warning disable CA1051 // Do not declare visible instance fields
+#pragma warning disable CA1815 // Override equals and operator equals on value types
+
 namespace ILGPU.OptiX.Interop
 {
     public struct OptixProgramGroupHitgroup
@@ -46,3 +49,6 @@ namespace ILGPU.OptiX.Interop
         public IntPtr EntryFunctionNameIS;
     }
 }
+
+#pragma warning restore CA1051 // Do not declare visible instance fields
+#pragma warning restore CA1815 // Override equals and operator equals on value types
