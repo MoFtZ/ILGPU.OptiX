@@ -33,7 +33,7 @@ namespace ILGPU.OptiX
             IntPtr optionKeys,
             IntPtr optionValues,
             IntPtr functionTable,
-            nuint sizeOfTable);
+            ulong sizeOfTable);
 
         #endregion
 
@@ -64,7 +64,7 @@ namespace ILGPU.OptiX
                 IntPtr.Zero,
                 IntPtr.Zero,
                 functionTablePtr,
-                (nuint)functionTableSize);
+                (ulong)functionTableSize);
             functionTable = Marshal.PtrToStructure<OptixFunctionTable>(functionTablePtr);
             return result;
         }

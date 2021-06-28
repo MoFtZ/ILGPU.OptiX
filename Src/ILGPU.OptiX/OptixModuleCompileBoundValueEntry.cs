@@ -19,8 +19,8 @@ namespace ILGPU.OptiX
     [CLSCompliant(false)]
     public struct OptixModuleCompileBoundValueEntry
     {
-        public nuint PipelineParamOffsetInBytes;
-        public nuint SizeInBytes;
+        public ulong PipelineParamOffsetInBytes;
+        public ulong SizeInBytes;
 
         public IntPtr BoundValuePtr;
 

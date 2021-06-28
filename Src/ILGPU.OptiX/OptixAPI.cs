@@ -113,13 +113,13 @@ namespace ILGPU.OptiX
             fixed (byte* ptxStringPtr = ptxStringBytes)
             fixed (byte* logPtr = logBytes)
             {
-                nuint logLength = (nuint)logBytes.Length;
+                ulong logLength = (ulong)logBytes.Length;
                 var result = func(
                     deviceContext,
                     moduleCompileOptionsPtr,
                     pipelineCompileOptionsPtr,
                     new IntPtr(ptxStringPtr),
-                    (nuint)ptxStringBytes.Length,
+                    (ulong)ptxStringBytes.Length,
                     new IntPtr(logPtr),
                     ref logLength,
                     out module
@@ -172,7 +172,7 @@ namespace ILGPU.OptiX
             var logBytes = new byte[DEFAULT_LOG_SIZE];
             fixed (byte* logPtr = logBytes)
             {
-                nuint logLength = (nuint)logBytes.Length;
+                ulong logLength = (ulong)logBytes.Length;
                 var result = func(
                     deviceContext,
                     programDescriptionsPtr,
@@ -234,7 +234,7 @@ namespace ILGPU.OptiX
             var logBytes = new byte[DEFAULT_LOG_SIZE];
             fixed (byte* logPtr = logBytes)
             {
-                nuint logLength = (nuint)logBytes.Length;
+                ulong logLength = (ulong)logBytes.Length;
                 var result = func(
                     deviceContext,
                     pipelineCompileOptionsPtr,

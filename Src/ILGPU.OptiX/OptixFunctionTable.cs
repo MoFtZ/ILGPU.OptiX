@@ -69,9 +69,9 @@ namespace ILGPU.OptiX
         IntPtr moduleCompileOptions,
         IntPtr pipelineCompileOptions,
         IntPtr ptxString,
-        nuint ptxStringSize,
+        ulong ptxStringSize,
         IntPtr logString,
-        ref nuint logStringSize,
+        ref ulong logStringSize,
         out IntPtr module);
 
     internal delegate OptixResult ModuleDestroy(IntPtr module);
@@ -82,7 +82,7 @@ namespace ILGPU.OptiX
         uint numProgramGroups,
         IntPtr programGroupOptions,
         IntPtr logString,
-        ref nuint logStringSize,
+        ref ulong logStringSize,
         out IntPtr programGroups);
 
     internal delegate OptixResult ProgramGroupDestroy(IntPtr programGroup);
@@ -94,7 +94,7 @@ namespace ILGPU.OptiX
         IntPtr programGroups,
         uint numProgramGroups,
         IntPtr logString,
-        ref nuint logStringSize,
+        ref ulong logStringSize,
         out IntPtr pipeline);
     internal delegate OptixResult PipelineDestroy(IntPtr pipeline);
 
