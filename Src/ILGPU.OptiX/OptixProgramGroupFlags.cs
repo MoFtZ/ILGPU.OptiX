@@ -1,6 +1,6 @@
 ﻿// ---------------------------------------------------------------------------------------
 //                                      ILGPU.OptiX
-//                        Copyright (c) 2020 ILGPU OptiX Project
+//                        Copyright (c) 2020-2021 ILGPU OptiX Project
 //                                    www.ilgpu.net
 //
 // File: OptixProgramGroupFlags.cs
