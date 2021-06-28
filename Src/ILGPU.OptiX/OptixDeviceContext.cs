@@ -35,9 +35,10 @@ namespace ILGPU.OptiX
         public CudaAccelerator Accelerator { get; }
 
         /// <summary>
-        /// Custom PTX backend.
+        /// The PTX backend.
         /// </summary>
-        public PTXBackend Backend { get; }
+        public PTXBackend Backend =>
+            Accelerator.Backend;
 
         #endregion
 
@@ -55,21 +56,6 @@ namespace ILGPU.OptiX
             Accelerator = accelerator
                 ?? throw new ArgumentNullException(nameof(accelerator));
             DeviceContextPtr = deviceContextPtr;
-
-            // WORKAROUND: Use a custom PTX backend that supports ISA 6.4 because
-            // OptiX does not like anything newer.
-            if (Accelerator.InstructionSet > CudaInstructionSet.ISA_64)
-            {
-                Backend = new PTXBackend(
-                    Accelerator.Context,
-                    Accelerator.Capabilities,
-                    Accelerator.Architecture,
-                    CudaInstructionSet.ISA_64);
-            }
-            else
-            {
-                Backend = Accelerator.Backend;
-            }
         }
 
         #endregion
