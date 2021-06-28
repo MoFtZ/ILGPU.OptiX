@@ -8,11 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ILGPU" Version="1.0.0-beta1" />
     <PackageReference Include="StbImageWriteSharp" Version="1.13.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ILGPU\Src\ILGPU\ILGPU.csproj" />
     <ProjectReference Include="..\..\Src\ILGPU.OptiX\ILGPU.OptiX.csproj" />
   </ItemGroup>
 

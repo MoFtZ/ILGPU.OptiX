@@ -10,6 +10,7 @@
 // ---------------------------------------------------------------------------------------
 
 using ILGPU.Backends.PTX;
+using ILGPU.IR;
 using ILGPU.IR.Intrinsics;
 using ILGPU.Runtime.Cuda;
 using System;
@@ -22,18 +23,19 @@ namespace ILGPU.OptiX
         /// <summary>
         /// Initializes OptiX library.
         /// </summary>
-        /// <param name="accelerator">The CUDA accelerator</param>
-        /// <returns>The CUDA accelerator.</returns>
-        public static CudaAccelerator InitOptiX(this CudaAccelerator accelerator)
+        /// <param name="builder">The context builder.</param>
+        /// <returns>The context builder.</returns>
+        public static Context.Builder InitOptiX(this Context.Builder builder)
         {
             OptixException.ThrowIfFailed(OptixAPI.Current.Init());
+            var intrinsicManager = builder.GetIntrinsicManager();
 
             // Register the Cuda instrinsics for OptiX
             var remappingType = typeof(OptixGetLaunchIndex);
             var methodInfo = remappingType.GetMethod(
                 nameof(OptixGetLaunchIndex.X),
                 BindingFlags.Public | BindingFlags.Static);
-            accelerator.Context.IntrinsicManager.RegisterMethod(
+            intrinsicManager.RegisterMethod(
                 methodInfo,
                 new PTXIntrinsic(
                     typeof(OptixGetLaunchIndex.Generator),
@@ -42,7 +44,7 @@ namespace ILGPU.OptiX
             methodInfo = remappingType.GetMethod(
                 nameof(OptixGetLaunchIndex.Y),
                 BindingFlags.Public | BindingFlags.Static);
-            accelerator.Context.IntrinsicManager.RegisterMethod(
+            intrinsicManager.RegisterMethod(
                 methodInfo,
                 new PTXIntrinsic(
                     typeof(OptixGetLaunchIndex.Generator),
@@ -51,14 +53,14 @@ namespace ILGPU.OptiX
             methodInfo = remappingType.GetMethod(
                 nameof(OptixGetLaunchIndex.Z),
                 BindingFlags.Public | BindingFlags.Static);
-            accelerator.Context.IntrinsicManager.RegisterMethod(
+            intrinsicManager.RegisterMethod(
                 methodInfo,
                 new PTXIntrinsic(
                     typeof(OptixGetLaunchIndex.Generator),
                     nameof(OptixGetLaunchIndex.Generator.GeneratePTXCode),
                     IntrinsicImplementationMode.GenerateCode));
 
-            return accelerator;
+            return builder;
         }
 
         /// <summary>
@@ -83,9 +85,11 @@ namespace ILGPU.OptiX
             this CudaAccelerator accelerator,
             OptixDeviceContextOptions options = default)
         {
+            if (accelerator == null)
+                throw new ArgumentNullException(nameof(accelerator));
             OptixException.ThrowIfFailed(
                 OptixAPI.Current.DeviceContextCreate(
-                    accelerator.ContextPtr,
+                    accelerator.NativePtr,
                     options,
                     out var deviceContext));
             return new OptixDeviceContext(accelerator, deviceContext);

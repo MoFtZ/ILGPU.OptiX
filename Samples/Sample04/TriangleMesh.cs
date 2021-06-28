@@ -1,4 +1,5 @@
-﻿using ILGPU.Runtime;
+﻿using ILGPU;
+using ILGPU.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,8 +12,8 @@ namespace Sample04
         public List<Vec3> vertexBuffer;
         public List<Vec3i> triangleIndexBuffer;
 
-        public MemoryBuffer<Vec3> d_vertexBuffer;
-        public MemoryBuffer<Vec3i> d_triangleIndexBuffer;
+        public MemoryBuffer1D<Vec3, Stride1D.Dense> d_vertexBuffer;
+        public MemoryBuffer1D<Vec3i, Stride1D.Dense> d_triangleIndexBuffer;
 
         private static int[] indices =
             {
@@ -65,8 +66,8 @@ namespace Sample04
                 d_vertexBuffer.Dispose();
             }
 
-            d_vertexBuffer = accelerator.Allocate(vertexBuffer.ToArray());
-            d_triangleIndexBuffer = accelerator.Allocate(triangleIndexBuffer.ToArray());
+            d_vertexBuffer = accelerator.Allocate1D(vertexBuffer.ToArray());
+            d_triangleIndexBuffer = accelerator.Allocate1D(triangleIndexBuffer.ToArray());
         }
     }
 }

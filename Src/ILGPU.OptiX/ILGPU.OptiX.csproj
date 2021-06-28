@@ -33,7 +33,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\ILGPU\Src\ILGPU\ILGPU.csproj" />
+      <PackageReference Include="ILGPU" Version="1.0.0-beta1" />
     </ItemGroup>
 
     <ItemGroup>

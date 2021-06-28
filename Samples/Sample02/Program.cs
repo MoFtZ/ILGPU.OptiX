@@ -40,8 +40,8 @@ namespace Sample02
 
         unsafe static void Main()
         {
-            using var context = new Context();
-            using var accelerator = new CudaAccelerator(context).InitOptiX();
+            using var context = Context.Create(b => b.Cuda().InitOptiX());
+            using var accelerator = context.CreateCudaAccelerator(0);
             using var deviceContext = accelerator.CreateDeviceContext();
 
             // Setup OptiX pipeline.
@@ -106,9 +106,9 @@ namespace Sample02
             var raygenRecordsArray = OptixSbt.PackRecords<RaygenRecord>(raygenKernels);
             var missRecordsArray = OptixSbt.PackRecords<MissRecord>(missKernels);
             var hitgroupRecordsArray = OptixSbt.PackRecords<HitgroupRecord>(hitgroupKernels);
-            using var raygenRecordsBuffer = accelerator.Allocate(raygenRecordsArray);
-            using var missRecordsBuffer = accelerator.Allocate(missRecordsArray);
-            using var hitgroupRecordsBuffer = accelerator.Allocate(hitgroupRecordsArray);
+            using var raygenRecordsBuffer = accelerator.Allocate1D(raygenRecordsArray);
+            using var missRecordsBuffer = accelerator.Allocate1D(missRecordsArray);
+            using var hitgroupRecordsBuffer = accelerator.Allocate1D(hitgroupRecordsArray);
             var sbt =
                 new OptixShaderBindingTable()
                 {
@@ -124,7 +124,8 @@ namespace Sample02
             // Setup launch parameters.
             var sizeX = 1200;
             var sizeY = 1024;
-            using var colorBuffer = accelerator.AllocateZero<byte>(sizeX * sizeY * sizeof(uint));
+            using var colorBuffer = accelerator.Allocate1D<byte>(sizeX * sizeY * sizeof(uint));
+            colorBuffer.MemSetToZero();
 
             var launchParams =
                 new LaunchParams()
@@ -146,7 +147,7 @@ namespace Sample02
             accelerator.Synchronize();
 
             // Write output.
-            var outputArray = colorBuffer.GetAsArray();
+            var outputArray = colorBuffer.GetAs1DArray();
             using var pngStream = File.OpenWrite("sample02.png");
             var writer = new StbImageWriteSharp.ImageWriter();
             writer.WritePng(

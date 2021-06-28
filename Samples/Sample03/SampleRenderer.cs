@@ -70,28 +70,28 @@ namespace Sample03
         MissRecord[] missRecordsArray;
         HitgroupRecord[] hitgroupRecordsArray;
 
-        MemoryBuffer<RaygenRecord> raygenRecordsBuffer;
-        MemoryBuffer<MissRecord> missRecordsBuffer;
-        MemoryBuffer<HitgroupRecord> hitgroupRecordsBuffer;
+        MemoryBuffer1D<RaygenRecord, Stride1D.Dense> raygenRecordsBuffer;
+        MemoryBuffer1D<MissRecord, Stride1D.Dense> missRecordsBuffer;
+        MemoryBuffer1D<HitgroupRecord, Stride1D.Dense> hitgroupRecordsBuffer;
 
         OptixShaderBindingTable sbt;
 
-        MemoryBuffer<byte> colorBuffer0;
-        MemoryBuffer<byte> colorBuffer1;
+        MemoryBuffer1D<byte, Stride1D.Dense> colorBuffer0;
+        MemoryBuffer1D<byte, Stride1D.Dense> colorBuffer1;
 
         byte[] colorArray;
 
         LaunchParams launchParams;
 
-        Action<Index1, int, int, ArrayView<byte>, ArrayView<byte>> flipBitmap;
+        Action<Index1D, int, int, ArrayView<byte>, ArrayView<byte>> flipBitmap;
 
         public unsafe SampleRenderer(int width, int height, MainWindow window)
         {
             this.window = window;
 
             //init optix
-            context = new Context();
-            accelerator = new CudaAccelerator(context).InitOptiX();
+            context = Context.Create(b => b.Cuda().InitOptiX());
+            accelerator = context.CreateCudaAccelerator(0);
             deviceContext = accelerator.CreateDeviceContext();
 
             moduleCompileOptions = new OptixModuleCompileOptions()
@@ -154,9 +154,9 @@ namespace Sample03
             missRecordsArray = OptixSbt.PackRecords<MissRecord>(missKernels);
             hitgroupRecordsArray = OptixSbt.PackRecords<HitgroupRecord>(hitgroupKernels);
 
-            raygenRecordsBuffer = accelerator.Allocate(raygenRecordsArray);
-            missRecordsBuffer = accelerator.Allocate(missRecordsArray);
-            hitgroupRecordsBuffer = accelerator.Allocate(hitgroupRecordsArray);
+            raygenRecordsBuffer = accelerator.Allocate1D(raygenRecordsArray);
+            missRecordsBuffer = accelerator.Allocate1D(missRecordsArray);
+            hitgroupRecordsBuffer = accelerator.Allocate1D(hitgroupRecordsArray);
 
             sbt = new OptixShaderBindingTable()
                 {
@@ -170,7 +170,7 @@ namespace Sample03
                 };
 
             resize(width, height);
-            flipBitmap = accelerator.LoadAutoGroupedStreamKernel<Index1, int, int, ArrayView<byte>, ArrayView<byte>>(devicePrograms.flipBitmap);
+            flipBitmap = accelerator.LoadAutoGroupedStreamKernel<Index1D, int, int, ArrayView<byte>, ArrayView<byte>>(devicePrograms.flipBitmap);
         }
 
         public void Dispose()
@@ -197,8 +197,10 @@ namespace Sample03
                 this.width = width;
                 this.height = height;
                 
-                colorBuffer0 = accelerator.AllocateZero<byte>(width * height * sizeof(uint));
-                colorBuffer1 = accelerator.AllocateZero<byte>(width * height * sizeof(uint));
+                colorBuffer0 = accelerator.Allocate1D<byte>(width * height * sizeof(uint));
+                colorBuffer0.MemSetToZero();
+                colorBuffer1 = accelerator.Allocate1D<byte>(width * height * sizeof(uint));
+                colorBuffer1.MemSetToZero();
 
                 colorArray = new byte[colorBuffer0.Length];
                 launchParams = new LaunchParams()
@@ -226,11 +228,11 @@ namespace Sample03
                 1);
 
             //need to flip bitmap because of wpf weirdness
-            flipBitmap(new Index1(width * height), width, height, colorBuffer0, colorBuffer1);
+            flipBitmap(new Index1D(width * height), width, height, colorBuffer0.View, colorBuffer1.View);
             accelerator.Synchronize();
 
             // Write output
-            colorBuffer1.CopyTo(colorArray, 0, 0, colorBuffer1.Length);
+            colorBuffer1.CopyToCPU(colorArray);
 
             //draws colorArray to window and waits for completion avoiding locking
             Application.Current.Dispatcher.Invoke(() => { window.draw(ref colorArray); });

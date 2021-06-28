@@ -59,13 +59,13 @@ namespace ILGPU.OptiX
 
             // WORKAROUND: Use a custom PTX backend that supports ISA 6.4 because
             // OptiX does not like anything newer.
-            if (Accelerator.InstructionSet > PTXInstructionSet.ISA_64)
+            if (Accelerator.InstructionSet > CudaInstructionSet.ISA_64)
             {
                 Backend = new PTXBackend(
                     Accelerator.Context,
                     Accelerator.Capabilities,
                     Accelerator.Architecture,
-                    PTXInstructionSet.ISA_64);
+                    CudaInstructionSet.ISA_64);
             }
             else
             {

@@ -36,7 +36,7 @@ namespace Sample04
         public static void __anyhit__radiance(LaunchParams launchParams)
         { }
 
-        public static void flipBitmap(Index1 index, int width, int height, ArrayView<byte> source, ArrayView<byte> dest)
+        public static void flipBitmap(Index1D index, int width, int height, ArrayView<byte> source, ArrayView<byte> dest)
         {
 
 

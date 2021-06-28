@@ -11,6 +11,7 @@
 
 using ILGPU.OptiX.Interop;
 using ILGPU.OptiX.Util;
+using ILGPU.Runtime;
 using ILGPU.Runtime.Cuda;
 using System;
 using System.Runtime.InteropServices;
@@ -63,8 +64,8 @@ namespace ILGPU.OptiX
             if (pipeline == null)
                 throw new ArgumentNullException(nameof(pipeline));
 
-            var launchParamsBuffer = accelerator.Allocate<TLaunchParams>(1);
-            launchParamsBuffer.CopyFrom(launchParams, 0);
+            var launchParamsBuffer = accelerator.Allocate1D<TLaunchParams>(1);
+            launchParamsBuffer.View.CopyFromCPU(stream, ref launchParams, 1);
 
             var sbtPtr = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixShaderBindingTable>());
             Marshal.StructureToPtr(sbt, sbtPtr, false);

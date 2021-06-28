@@ -387,8 +387,8 @@ namespace ILGPU.OptiX
             OptixAccelBuildOptions accelOptions,
             OptixBuildInput[] buildInputs,
             OptixAccelBufferSizes bufferSizes,
-            MemoryBuffer<byte> tempBuffer,
-            MemoryBuffer<byte> outputBuffer,
+            ArrayView1D<byte, Stride1D.Dense> tempBuffer,
+            ArrayView1D<byte, Stride1D.Dense> outputBuffer,
             OptixAccelEmitDesc[] emittedProperties)
         {
             using var accelBuildOptions = SafeHGlobal.AllocHGlobal(Marshal.SizeOf<OptixAccelBuildOptions>());
@@ -419,9 +419,9 @@ namespace ILGPU.OptiX
                     accelBuildOptions,
                     accelBuildInputs,
                     (uint)buildInputs.Length,
-                    tempBuffer.NativePtr,
+                    tempBuffer.BaseView.LoadEffectiveAddressAsPtr(),
                     (ulong)tempBuffer.LengthInBytes,
-                    outputBuffer.NativePtr,
+                    outputBuffer.BaseView.LoadEffectiveAddressAsPtr(),
                     (ulong)outputBuffer.LengthInBytes,
                     (IntPtr)asHandlePtr,
                     emittedPropertiesInputs,

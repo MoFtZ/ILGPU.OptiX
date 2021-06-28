@@ -8,8 +8,8 @@ namespace Sample01
     {
         static void Main()
         {
-            using var context = new Context();
-            using var accelerator = new CudaAccelerator(context).InitOptiX();
+            using var context = Context.Create(b => b.Cuda().InitOptiX());
+            using var accelerator = context.CreateCudaAccelerator(0);
         }
     }
 }

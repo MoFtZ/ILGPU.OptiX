@@ -61,9 +61,10 @@ namespace ILGPU.OptiX
                 backend,
                 entryFunctionName,
                 altKernelName);
-            var ptxAssembly = ptx.PTXAssembly.Replace(
-                $" .entry {PTXCompiledKernel.EntryName}",
-                $" .func {altKernelName}");
+            var ptxAssembly = Regex.Replace(
+                ptx.PTXAssembly,
+                $" .entry (.+)\\(",
+                $" .func {altKernelName}(");
 
             ptxAssembly += entryPointKernel;
             return ptxAssembly;
@@ -89,9 +90,10 @@ namespace ILGPU.OptiX
             ptx = ptx.Substring(ptx.IndexOf(".visible .entry"));
 
             // Renaming the entry point to the preferred name.
-            ptx = ptx.Replace(
-                $" .entry {PTXCompiledKernel.EntryName}",
-                $" .entry {entryFunctionName}");
+            ptx = Regex.Replace(
+                ptx,
+                $" .entry (.+)\\(",
+                $" .entry {entryFunctionName}(");
 
             // Identify the single function parameter of the kernel.
 
