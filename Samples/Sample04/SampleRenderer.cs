@@ -283,7 +283,8 @@ namespace Sample04
 
             asHandle = deviceContext.AccelBuild(accelerator.DefaultStream, accelOptions, buildInputs, tempBuffer, outputBuffer, emitDesc);
 
-            compactedSizeBuffer.View.CopyToCPU(out ulong compactedSize, 1);
+            ulong compactedSize = 0;
+            compactedSizeBuffer.View.CopyToCPU(ref compactedSize, 1);
             asBuffer = accelerator.Allocate1D<byte>((long)compactedSize);
 
             return asHandle;

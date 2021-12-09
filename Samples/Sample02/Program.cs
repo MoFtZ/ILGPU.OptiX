@@ -147,7 +147,7 @@ namespace Sample02
             accelerator.Synchronize();
 
             // Write output.
-            var outputArray = colorBuffer.GetAs1DArray();
+            var outputArray = colorBuffer.GetAsArray1D();
             using var pngStream = File.OpenWrite("sample02.png");
             var writer = new StbImageWriteSharp.ImageWriter();
             writer.WritePng(
