@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ILGPU" Version="1.0.0-beta1" />
+    <PackageReference Include="ILGPU" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
