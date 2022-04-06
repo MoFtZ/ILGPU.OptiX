@@ -1,12 +1,12 @@
 ﻿// ---------------------------------------------------------------------------------------
-//                                      ILGPU.OptiX
-//                        Copyright (c) 2020-2021 ILGPU OptiX Project
+//                                     ILGPU OptiX
+//                        Copyright (c) 2020-2022 ILGPU Project
 //                                    www.ilgpu.net
 //
 // File: OptixLaunchParams.cs
 //
 // This file is part of ILGPU and is distributed under the University of Illinois Open
-// Source License. See LICENSE.txt for details
+// Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
 namespace ILGPU.OptiX

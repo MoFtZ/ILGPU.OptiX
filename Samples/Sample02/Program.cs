@@ -1,4 +1,15 @@
-﻿using System.IO;
+﻿// ---------------------------------------------------------------------------------------
+//                                    ILGPU Samples
+//                        Copyright (c) 2020-2022 ILGPU Project
+//                                    www.ilgpu.net
+//
+// File: Program.cs
+//
+// This file is part of ILGPU and is distributed under the University of Illinois Open
+// Source License. See LICENSE.txt for details.
+// ---------------------------------------------------------------------------------------
+
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using ILGPU;

@@ -1,4 +1,15 @@
-﻿using ILGPU;
+﻿// ---------------------------------------------------------------------------------------
+//                                    ILGPU Samples
+//                        Copyright (c) 2020-2022 ILGPU Project
+//                                    www.ilgpu.net
+//
+// File: devicePrograms.cs
+//
+// This file is part of ILGPU and is distributed under the University of Illinois Open
+// Source License. See LICENSE.txt for details.
+// ---------------------------------------------------------------------------------------
+
+using ILGPU;
 using ILGPU.OptiX;
 
 namespace Sample03
