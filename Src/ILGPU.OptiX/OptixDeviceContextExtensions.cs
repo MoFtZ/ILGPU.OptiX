@@ -315,6 +315,8 @@ namespace ILGPU.OptiX
         {
             if (deviceContext == null)
                 throw new ArgumentNullException(nameof(deviceContext));
+            if (programGroups == null)
+                throw new ArgumentNullException(nameof(programGroups));
 
             using var programGroupsPtr = SafeHGlobal.Alloc<IntPtr>(programGroups.Length);
             IntPtr nextPtr = programGroupsPtr;
@@ -352,6 +354,8 @@ namespace ILGPU.OptiX
         {
             if (deviceContext == null)
                 throw new ArgumentNullException(nameof(deviceContext));
+            if (buildInputs == null)
+                throw new ArgumentNullException(nameof(buildInputs));
 
             using var accelBuildOptions = SafeHGlobal.AllocFrom(accelOptions);
             using var accelBuildInputs = SafeHGlobal.AllocFrom<OptixBuildInput>(buildInputs);
