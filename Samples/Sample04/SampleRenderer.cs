@@ -9,16 +9,16 @@
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
-using System;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Windows;
 using ILGPU;
 using ILGPU.OptiX;
 using ILGPU.OptiX.Interop;
 using ILGPU.Runtime;
 using ILGPU.Runtime.Cuda;
+using System;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Windows;
 
 namespace Sample04
 {

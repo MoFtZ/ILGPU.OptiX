@@ -9,9 +9,9 @@
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
+using ILGPU.OptiX;
 using System;
 using System.Runtime.InteropServices;
-using ILGPU.OptiX;
 
 namespace Sample02
 {
