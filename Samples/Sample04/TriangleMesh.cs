@@ -9,9 +9,9 @@
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
 using ILGPU;
 using ILGPU.Runtime;
+using System.Collections.Generic;
 
 namespace Sample04
 {

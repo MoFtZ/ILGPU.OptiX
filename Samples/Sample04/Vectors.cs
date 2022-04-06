@@ -9,8 +9,8 @@
 // Source License. See LICENSE.txt for details.
 // ---------------------------------------------------------------------------------------
 
-using System.Numerics;
 using ILGPU.Algorithms;
+using System.Numerics;
 
 namespace Sample04
 {
