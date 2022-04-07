@@ -1,0 +1,112 @@
+﻿// ---------------------------------------------------------------------------------------
+//                                     ILGPU OptiX
+//                           Copyright (c) 2022 ILGPU Project
+//                                    www.ilgpu.net
+//
+// File: OptixTrace.tt/OptixTrace.cs
+//
+// This file is part of ILGPU and is distributed under the University of Illinois Open
+// Source License. See LICENSE.txt for details.
+// ---------------------------------------------------------------------------------------
+
+<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+
+using ILGPU.Runtime.Cuda;
+using System;
+
+namespace ILGPU.OptiX
+{
+    /// <summary>
+    /// Provides the functionality of the optixTrace built-in function.
+    /// </summary>
+    [CLSCompliant(false)]
+    public static class OptixTrace
+    {
+<#
+    for (int paramIdx = 0; paramIdx <= 8; paramIdx++) {
+        string callInstruction = "call";
+        if (paramIdx > 0)
+        {
+            callInstruction += " (";
+            callInstruction += string.Join(
+                ", ",
+                Enumerable.Range(0, paramIdx).Select(x => $"%{x}"));
+            callInstruction += ")";
+        }
+        callInstruction += $" _optix_trace_{paramIdx}, (";
+        callInstruction += string.Join(
+            ", ",
+            Enumerable.Range(paramIdx, 15 + paramIdx).Select(x => $"%{x}"));
+        callInstruction += ");";
+#>
+        public static void Trace(
+            IntPtr traversableHandle
+            , (float X, float Y, float Z) rayOrigin
+            , (float X, float Y, float Z) rayDirection
+            , float tmin
+            , float tmax
+            , float rayTime
+            , uint visibilityMask
+            , OptixRayFlags rayFlags
+            , uint SBToffset
+            , uint SBTstride
+            , uint missSBTIndex
+<#      for (int i = 0; i < paramIdx; i++) { #>
+            , ref uint p<#= i #>
+<#      } #>
+            )
+        {
+            Input<IntPtr> _traversableHandle = traversableHandle;
+            Input<float> _ox = rayOrigin.X;
+            Input<float> _oy = rayOrigin.Y;
+            Input<float> _oz = rayOrigin.Z;
+            Input<float> _dx = rayDirection.X;
+            Input<float> _dy = rayDirection.Y;
+            Input<float> _dz = rayDirection.Z;
+            Input<float> _tmin = tmin;
+            Input<float> _tmax = tmax;
+            Input<float> _rayTime = rayTime;
+            Input<uint> _visibilityMask = visibilityMask;
+            Input<OptixRayFlags> _rayFlags = rayFlags;
+            Input<uint> _SBToffset = SBToffset;
+            Input<uint> _SBTstride = SBTstride;
+            Input<uint> _missSBTIndex = missSBTIndex;
+<#      for (int i = 0; i < paramIdx; i++) { #>
+            Ref<uint> _p<#= i #> = p<#= i #>;
+<#      } #>
+
+            CudaAsm.EmitRef(
+                "<#= callInstruction #>"
+                , ref _traversableHandle
+                , ref _ox
+                , ref _oy
+                , ref _oz
+                , ref _dx
+                , ref _dy
+                , ref _dz
+                , ref _tmin
+                , ref _tmax
+                , ref _rayTime
+                , ref _visibilityMask
+                , ref _rayFlags
+                , ref _SBToffset
+                , ref _SBTstride
+                , ref _missSBTIndex
+<#      for (int i = 0; i < paramIdx; i++) { #>
+                , ref _p<#= i #>
+<#      } #>
+                );
+
+<#      for (int i = 0; i < paramIdx; i++) { #>
+            p<#= i #> = _p<#= i #>.Value;
+<#      } #>
+        }
+
+<# } #>
+    }
+}
