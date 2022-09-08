@@ -34,10 +34,21 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="ILGPU" Version="1.0.0" />
+      <PackageReference Include="ILGPU" Version="1.2.0-beta1" />
+      <PackageReference Include="T4.Build" Version="0.2.4" />
     </ItemGroup>
 
     <ItemGroup>
+      <Compile Update="OptixPayload.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>OptixPayload.tt</DependentUpon>
+      </Compile>
+      <Compile Update="OptixTrace.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>OptixTrace.tt</DependentUpon>
+      </Compile>
       <Compile Update="Resources\ErrorMessages.Designer.cs">
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
@@ -50,6 +61,21 @@
         <Generator>ResXFileCodeGenerator</Generator>
         <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="OptixPayload.tt">
+        <Generator>TextTemplatingFileGenerator</Generator>
+        <LastGenOutput>OptixPayload.cs</LastGenOutput>
+      </None>
+      <None Update="OptixTrace.tt">
+        <Generator>TextTemplatingFileGenerator</Generator>
+        <LastGenOutput>OptixTrace.cs</LastGenOutput>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
     </ItemGroup>
 
     <Import Project="Properties\ILGPU.CheckStyles.targets" />

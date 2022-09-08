@@ -245,3 +245,7 @@ ModelManifest.xml
 
 # Doxygen ignore
 .doxygen
+
+# Ignore T4 generated files
+Src/ILGPU.Optix/OptixPayload.cs
+Src/ILGPU.Optix/OptixTrace.cs

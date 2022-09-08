@@ -1,0 +1,49 @@
+﻿// ---------------------------------------------------------------------------------------
+//                                     ILGPU OptiX
+//                           Copyright (c) 2022 ILGPU Project
+//                                    www.ilgpu.net
+//
+// File: OptixPayload.tt/OptixPayload.cs
+//
+// This file is part of ILGPU and is distributed under the University of Illinois Open
+// Source License. See LICENSE.txt for details.
+// ---------------------------------------------------------------------------------------
+
+<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+
+using ILGPU.Runtime.Cuda;
+using System;
+
+namespace ILGPU.OptiX
+{
+    /// <summary>
+    /// Provides the functionality of the optixGetPayload and optixSetPayload built-in
+    /// functions.
+    /// </summary>
+    [CLSCompliant(false)]
+    public static class OptixPayload
+    {
+<# for (int payloadIdx = 0; payloadIdx <= 8; payloadIdx++) { #>
+        public static uint Payload<#= payloadIdx #>
+        {
+            get
+            {
+                CudaAsm.Emit(
+                    "call (%0), _optix_get_payload_<#= payloadIdx #>, ();",
+                    out uint x);
+                return x;
+            }
+            set
+            {
+                CudaAsm.Emit("call _optix_set_payload_<#= payloadIdx #>, (%0);", value);
+            }
+        }
+
+<# } #>
+    }
+}
